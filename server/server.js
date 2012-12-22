@@ -1,48 +1,59 @@
-var express = require('express');
-var hbs = require('hbs');
+
+var rootPath = __dirname + '/..';
 var port = 3000;
 
+var express = require('express');
+var fs = require('fs');
+var handlebars = require('handlebars');
+var templater = require(rootPath + '/server/templater.js');
+
+templater.initialize(function(){
+	console.log('templater.initialize success');
+});
+
 var app = express();
+//Set the publicd fodler
+app.use(express.static(__dirname + '/../public'));
 
 app.use(express.methodOverride());
 
-app.configure(function(){
-  
-  app.use(express.bodyParser());
-
-  
-
-});
+app.configure(
+	function()
+	{
+		app.use(express.bodyParser());
+	}
+);
 
 /////////////////////////////////////////////////////////////////
 // CORS SETUP
 
 var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      
-    // intercept OPTIONS method
-    if ('OPTIONS' === req.method) {
-      res.send(200);
-    }
-    else {
-      next();
-    }
+		res.header('Access-Control-Allow-Origin', '*');
+		res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+		res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+			
+		// intercept OPTIONS method
+		if ('OPTIONS' === req.method) {
+			res.send(200);
+		}
+		else {
+			next();
+		}
 };
 app.use(allowCrossDomain);
 
 /////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-
-// var users = require('./data/users.js');
 
 app.get('/', function(request, response)
 {
-	response.send('Hello I\'m the mock server');
+	var output = templater.compile(
+		'index',
+		{
+			message:'This is dynamic!'
+		}
+	);
+	response.send(output);
 });
-
-
 
 /////////////////////////////////////////////////////////////////
 // STARTUP
