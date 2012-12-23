@@ -12,6 +12,36 @@ var rawTemplates = {};
 var compiledTemplates = {};
 
 
+///////////////////////////////////////////////////////////////
+// BASE CLASS
+
+var BaseClass = function(){
+	
+};
+
+BaseClass.extend = function(newPrototype)
+{
+	var output = function()
+	{
+		this.initialize.apply(this, arguments);
+	};
+	_.extend(output.prototype, this.prototype, newPrototype);
+	return output;
+};
+
+///////////////////////////////////////////////////////////////
+// TEMPLATER
+
+var Templater = BaseClass.extend(
+	{
+		initialize: function(options)
+		{
+			console.log('Templater.initialize', options);
+		}
+	}
+);
+
+///////////////////////////////////////////////////////////////
 
 function loadTemplate(fileName, resultHandler)
 {
@@ -168,7 +198,7 @@ exports.initialize = function(options, resultHandler)
 	pathSuffix = options.pathSuffix;
 
 	addTemplates(
-		options.templates,
+		options.unloadedTemplates,
 		resultHandler
 	);
 };

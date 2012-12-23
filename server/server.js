@@ -16,7 +16,7 @@ templater.initialize(
 	{
 		pathPrefix: rootPath + '/public/templates',
 		pathSuffix: '.hbs',
-		templates: ['index', 'mainMenu']
+		unloadedTemplates: ['index', 'mainMenu']
 	},
 	{
 		success: function()
