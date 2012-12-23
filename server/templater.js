@@ -41,7 +41,6 @@ function getTemplateById(id, resultHandler)
 	}
 	else
 	{
-		console.log(getPathById(id));
 		loadTemplate(
 			getPathById(id),
 			// templatesFolderPath + '/' + id + '.hbs',
@@ -94,7 +93,7 @@ function addTemplates(templates, resultHandler)
 						path: getPathById(template)
 					}
 				);
-				console.log('add templates', template);
+				// console.log(' adding template', template);
 			}
 		);
 
