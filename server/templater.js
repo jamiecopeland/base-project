@@ -1,6 +1,6 @@
 var fs = require('fs');
 var _ = require('underscore');
-var handlebars = require('handlebars');
+var Handlebars = require('handlebars');
 
 var rootPath = __dirname + '/..';
 var pathPrefix = '';
@@ -32,7 +32,7 @@ function loadTemplate(fileName, resultHandler)
 	);
 }
 
-function getTemplateById(id, resultHandler)
+function getTemplateByIdAsync(id, resultHandler)
 {
 	var cachedTemplate = rawTemplates[id];
 	if(cachedTemplate)
@@ -114,11 +114,14 @@ function loadNextTemplate(completionResultHandler)
 		loadTemplate(
 			template.path,
 			{
-				success: function()
+				success: function(data)
 				{
 					// Remove item from unloaded templates
 					unloadedTemplates.splice(unloadedTemplates.indexOf(template), 1);
 					
+					// Add item to the rawTemplatess
+					rawTemplates[template.id] = data;
+
 					loadNextTemplate(completionResultHandler);
 				},
 				error: function(error)
@@ -139,7 +142,7 @@ function getCompiledTemplate(id)
 	var compiledTemplate = compiledTemplates[id];
 	if(!compiledTemplate)
 	{
-		compiledTemplate = handlebars.compile(rawTemplates[id]);
+		compiledTemplate = Handlebars.compile(rawTemplates[id]);
 		compiledTemplates[id] = compiledTemplate;
 	}
 
@@ -150,6 +153,14 @@ function getPathById(id)
 {
 	return pathPrefix + '/' + id + pathSuffix;
 }
+
+function compile(id, data)
+{
+	return getCompiledTemplate(id)(data);
+}
+
+/////////////////////////////////////////////////////////////
+// PUBLIC METHODS
 
 exports.initialize = function(options, resultHandler)
 {
@@ -164,6 +175,16 @@ exports.initialize = function(options, resultHandler)
 
 exports.compile = function(id, data)
 {
-	return getCompiledTemplate(id)(data);
+	return compile(id, data);
 };
 
+//////////////////////////////////////////////////////////////
+// HANDLEBARS HELPERS
+
+Handlebars.registerHelper(
+	"includeTemplate",
+	function(templateName, data)
+	{
+		return compile(templateName, data);
+	}
+);

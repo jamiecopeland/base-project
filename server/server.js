@@ -4,7 +4,7 @@ var port = 3000;
 
 var express = require('express');
 var fs = require('fs');
-var handlebars = require('handlebars');
+var Handlebars = require('handlebars');
 var templater = require(rootPath + '/server/templater.js');
 
 /////////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@ templater.initialize(
 	{
 		pathPrefix: rootPath + '/public/templates',
 		pathSuffix: '.hbs',
-		templates: ['index', 'test']
+		templates: ['index', 'mainMenu']
 	},
 	{
 		success: function()
@@ -30,6 +30,7 @@ templater.initialize(
 		}
 	}
 );
+
 
 /////////////////////////////////////////////////////////////////
 // EXPRESS SETUP
@@ -73,7 +74,11 @@ app.get('/', function(request, response)
 	var output = templater.compile(
 		'index',
 		{
-			message:'This is dynamic!'
+			message:'This is dynamic!',
+			mainMenu:
+			{
+				title:'This is the dynamic title'
+			}
 		}
 	);
 	response.send(output);
