@@ -2,8 +2,6 @@ var fs = require('fs');
 var _ = require('underscore');
 var Handlebars = require('handlebars');
 
-
-
 ///////////////////////////////////////////////////////////////
 // BASE CLASS
 
@@ -30,16 +28,20 @@ var Templater = BaseClass.extend(
 	{
 		initialize: function(options, resultHandler)
 		{
+
 			this.unloadedTemplates = [];
 			this.rawTemplates = {};
 			this.compiledTemplates = {};
 
+
+
 			this.pathPrefix = options.pathPrefix;
 			this.pathSuffix = options.pathSuffix;
+			this.loaderType = options.loaderType;
 
 			if(options.unloadedTemplates)
 			{
-				this.addTemplates(
+				this.loadTemplates(
 					options.unloadedTemplates,
 					resultHandler
 				);
@@ -51,10 +53,34 @@ var Templater = BaseClass.extend(
 			return this.getCompiledTemplate(id)(data);
 		},
 
-		loadFile: function(fileName, resultHandler)
+		loadFile: function(path, resultHandler)
+		{
+			// TODO Refact
+			switch(this.loaderType)
+			{
+				case 'serverLocal':
+					this.loadServerLocal(path, resultHandler);
+				break;
+
+				case 'browserRemote':
+					$.ajax(
+						{
+							url: path,
+							success: resultHandler.success,
+							error: resultHandler.error
+						}
+					);
+				break;
+			}
+		},
+
+		/////////////////////////////////////////////////////
+		// LOADER TYPES
+
+		loadServerLocal: function(filePath, resultHandler)
 		{
 			fs.readFile(
-				fileName,
+				filePath,
 				'utf8',
 				function(err, data)
 				{
@@ -69,8 +95,19 @@ var Templater = BaseClass.extend(
 				}
 			);
 		},
+
+		loadBrowserRemote: function()
+		{
+			$.ajax(
+				{
+					url: fileName,
+					success: resultHandler.success,
+					error: resultHandler.error
+				}
+			);
+		},
 		
-		addTemplates: function(templates, resultHandler)
+		loadTemplates: function(templates, resultHandler)
 		{
 			var self = this;
 
@@ -162,7 +199,6 @@ var Templater = BaseClass.extend(
 
 /////////////////////////////////////////////////////////////
 // PUBLIC METHODS
-
 
 var templaterInstance;
 

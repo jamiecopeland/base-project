@@ -16,6 +16,7 @@ templater.initialize(
 	{
 		pathPrefix: __dirname + '/../public/templates',
 		pathSuffix: '.hbs',
+		loaderType: 'serverLocal',
 		unloadedTemplates: ['index', 'mainMenu']
 		// unloadedTemplates: [
 		// 	{
