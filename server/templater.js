@@ -30,20 +30,34 @@ BaseClass.extend = function(newPrototype)
 };
 
 ///////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////
 // TEMPLATER
 
 var Templater = BaseClass.extend(
 	{
-		initialize: function(options)
+		initialize: function(options, resultHandler)
 		{
-			console.log('Templater.initialize', options);
+			pathPrefix = options.pathPrefix;
+			pathSuffix = options.pathSuffix;
+
+			addTemplates(
+				options.unloadedTemplates,
+				resultHandler
+			);
+		},
+
+		compile: function(id, data)
+		{
+			var output = compile(id, data);
+			return compile(id, data);
 		}
 	}
 );
 
 ///////////////////////////////////////////////////////////////
 
-function loadTemplate(fileName, resultHandler)
+function loadFile(fileName, resultHandler)
 {
 	fs.readFile(
 		fileName,
@@ -71,7 +85,7 @@ function getTemplateByIdAsync(id, resultHandler)
 	}
 	else
 	{
-		loadTemplate(
+		loadFile(
 			getPathById(id),
 			// templatesFolderPath + '/' + id + '.hbs',
 			{
@@ -91,7 +105,7 @@ function getTemplateByIdAsync(id, resultHandler)
 
 function addTemplate(id, resultHandler)
 {
-	loadTemplate(
+	loadFile(
 		templatesFolderPath + '/' + id + '.hbs',
 		{
 			success: function(data)
@@ -106,8 +120,6 @@ function addTemplate(id, resultHandler)
 		}
 	);
 }
-
-
 
 function addTemplates(templates, resultHandler)
 {
@@ -141,7 +153,7 @@ function loadNextTemplate(completionResultHandler)
 	{
 		var template = unloadedTemplates[0];
 		
-		loadTemplate(
+		loadFile(
 			template.path,
 			{
 				success: function(data)
@@ -192,20 +204,17 @@ function compile(id, data)
 /////////////////////////////////////////////////////////////
 // PUBLIC METHODS
 
+
+var templaterInstance;
+
 exports.initialize = function(options, resultHandler)
 {
-	pathPrefix = options.pathPrefix;
-	pathSuffix = options.pathSuffix;
-
-	addTemplates(
-		options.unloadedTemplates,
-		resultHandler
-	);
+	templaterInstance = new Templater(options, resultHandler);
 };
 
 exports.compile = function(id, data)
 {
-	return compile(id, data);
+	return templaterInstance.compile(id, data);
 };
 
 //////////////////////////////////////////////////////////////
