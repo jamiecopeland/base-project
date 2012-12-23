@@ -2,9 +2,6 @@ var fs = require('fs');
 var _ = require('underscore');
 var Handlebars = require('handlebars');
 
-var unloadedTemplates = [];
-var rawTemplates = {};
-var compiledTemplates = {};
 
 
 ///////////////////////////////////////////////////////////////
@@ -33,6 +30,10 @@ var Templater = BaseClass.extend(
 	{
 		initialize: function(options, resultHandler)
 		{
+			this.unloadedTemplates = [];
+			this.rawTemplates = {};
+			this.compiledTemplates = {};
+
 			this.pathPrefix = options.pathPrefix;
 			this.pathSuffix = options.pathSuffix;
 
@@ -69,31 +70,32 @@ var Templater = BaseClass.extend(
 			);
 		},
 
-		getTemplateByIdAsync: function(id, resultHandler)
-		{
-			var cachedTemplate = rawTemplates[id];
-			if(cachedTemplate)
-			{
-				resultHandler.success(cachedTemplate);
-			}
-			else
-			{
-				this.loadFile(
-					this.getPathById(id),
-					{
-						success: function(data)
-						{
-							rawTemplates[id] = data;
-							resultHandler.success(data);
-						},
-						error: function(error)
-						{
-							resultHandler.error(error);
-						}
-					}
-				);
-			}
-		},
+		// getTemplateByIdAsync: function(id, resultHandler)
+		// {
+		// 	var self = this;
+		// 	var cachedTemplate = this.rawTemplates[id];
+		// 	if(cachedTemplate)
+		// 	{
+		// 		resultHandler.success(cachedTemplate);
+		// 	}
+		// 	else
+		// 	{
+		// 		this.loadFile(
+		// 			this.getPathById(id),
+		// 			{
+		// 				success: function(data)
+		// 				{
+		// 					self.rawTemplates[id] = data;
+		// 					resultHandler.success(data);
+		// 				},
+		// 				error: function(error)
+		// 				{
+		// 					resultHandler.error(error);
+		// 				}
+		// 			}
+		// 		);
+		// 	}
+		// },
 		
 		addTemplates: function(templates, resultHandler)
 		{
@@ -105,11 +107,11 @@ var Templater = BaseClass.extend(
 				{
 					if(templateReference instanceof Object)
 					{
-						unloadedTemplates.push(templateReference);
+						self.unloadedTemplates.push(templateReference);
 					}
 					else
 					{
-						unloadedTemplates.push(
+						self.unloadedTemplates.push(
 							{
 								id: templateReference,
 								path: self.getPathById(templateReference)
@@ -126,9 +128,9 @@ var Templater = BaseClass.extend(
 		{
 			var self = this;
 
-			if(unloadedTemplates.length > 0)
+			if(this.unloadedTemplates.length > 0)
 			{
-				var template = unloadedTemplates[0];
+				var template = this.unloadedTemplates[0];
 				
 				this.loadFile(
 					template.path,
@@ -136,10 +138,10 @@ var Templater = BaseClass.extend(
 						success: function(data)
 						{
 							// Remove item from unloaded templates
-							unloadedTemplates.splice(unloadedTemplates.indexOf(template), 1);
+							self.unloadedTemplates.splice(self.unloadedTemplates.indexOf(template), 1);
 							
 							// Add item to the rawTemplatess
-							rawTemplates[template.id] = data;
+							self.rawTemplates[template.id] = data;
 
 							self.loadNextTemplate(completionResultHandler);
 						},
@@ -158,14 +160,19 @@ var Templater = BaseClass.extend(
 
 		getCompiledTemplate: function(id)
 		{
-			var compiledTemplate = compiledTemplates[id];
+			var compiledTemplate = this.compiledTemplates[id];
 			if(!compiledTemplate)
 			{
-				compiledTemplate = Handlebars.compile(rawTemplates[id]);
-				compiledTemplates[id] = compiledTemplate;
+				compiledTemplate = Handlebars.compile(this.getRawTemplate(id));
+				this.compiledTemplates[id] = compiledTemplate;
 			}
 
 			return compiledTemplate;
+		},
+
+		getRawTemplate: function(id)
+		{
+			return this.rawTemplates[id];
 		},
 
 		getPathById: function(id)
