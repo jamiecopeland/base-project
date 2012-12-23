@@ -7,12 +7,36 @@ var fs = require('fs');
 var handlebars = require('handlebars');
 var templater = require(rootPath + '/server/templater.js');
 
-templater.initialize(function(){
-	console.log('templater.initialize success');
-});
+/////////////////////////////////////////////////////////////////
+// TEMPLATER SETUP
+
+var startTime = new Date();
+
+templater.initialize(
+	{
+		pathPrefix: rootPath + '/public/templates',
+		pathSuffix: '.hbs',
+		templates: ['index', 'test']
+	},
+	{
+		success: function()
+		{
+			var endTime = new Date();
+			console.log('templater.initialize success', endTime.getTime() - startTime.getTime());
+		},
+		error: function(error)
+		{
+			console.log('Templater.initialize >> ' + error.message);
+		}
+	}
+);
+
+/////////////////////////////////////////////////////////////////
+// EXPRESS SETUP
 
 var app = express();
-//Set the publicd fodler
+
+//Set the public folder
 app.use(express.static(__dirname + '/../public'));
 
 app.use(express.methodOverride());

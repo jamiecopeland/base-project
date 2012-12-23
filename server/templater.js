@@ -1,13 +1,19 @@
 var fs = require('fs');
+var _ = require('underscore');
 var handlebars = require('handlebars');
 
 var rootPath = __dirname + '/..';
+var pathPrefix = '';
+var pathSuffix = '';
 var templatesFolderPath = rootPath + '/public/templates';
 
+var unloadedTemplates = [];
 var rawTemplates = {};
 var compiledTemplates = {};
 
-function loadtemplate(fileName, resultHandler)
+
+
+function loadTemplate(fileName, resultHandler)
 {
 	fs.readFile(
 		fileName,
@@ -35,8 +41,10 @@ function getTemplateById(id, resultHandler)
 	}
 	else
 	{
-		loadtemplate(
-			templatesFolderPath + '/' + id + '.hbs',
+		console.log(getPathById(id));
+		loadTemplate(
+			getPathById(id),
+			// templatesFolderPath + '/' + id + '.hbs',
 			{
 				success: function(data)
 				{
@@ -52,9 +60,79 @@ function getTemplateById(id, resultHandler)
 	}
 }
 
-function getRawTemplate(id)
+function addTemplate(id, resultHandler)
 {
-	return rawTemplates[id];
+	loadTemplate(
+		templatesFolderPath + '/' + id + '.hbs',
+		{
+			success: function(data)
+			{
+				rawTemplates[id] = data;
+				resultHandler.success(data);
+			},
+			error: function(error)
+			{
+				resultHandler.error(error);
+			}
+		}
+	);
+}
+
+
+
+function addTemplates(templates, resultHandler)
+{
+	if(templates instanceof Array)
+	{
+		_.each(
+			templates,
+			function(template)
+			{
+				unloadedTemplates.push(
+					{
+						id: template,
+						path: getPathById(template)
+					}
+				);
+				console.log('add templates', template);
+			}
+		);
+
+		loadNextTemplate(resultHandler);
+	}
+	else
+	{
+
+	}
+}
+
+function loadNextTemplate(completionResultHandler)
+{
+	if(unloadedTemplates.length > 0)
+	{
+		var template = unloadedTemplates[0];
+		
+		loadTemplate(
+			template.path,
+			{
+				success: function()
+				{
+					// Remove item from unloaded templates
+					unloadedTemplates.splice(unloadedTemplates.indexOf(template), 1);
+					
+					loadNextTemplate(completionResultHandler);
+				},
+				error: function(error)
+				{
+					completionResultHandler.error(new Error('Error Loading Template: ' + template.id + ' - ' + template.path));
+				}
+			}
+		);
+	}
+	else
+	{
+		completionResultHandler.success();
+	}
 }
 
 function getCompiledTemplate(id)
@@ -69,20 +147,19 @@ function getCompiledTemplate(id)
 	return compiledTemplate;
 }
 
-exports.initialize = function(completeHandler)
+function getPathById(id)
 {
-	getTemplateById(
-		'index',
-		{
-			success: function(data)
-			{
-				console.log('TEMPLATES LOADED');
-			},
-			error: function(error)
-			{
-				console.log('getTemplateById error', error);
-			}
-		}
+	return pathPrefix + '/' + id + pathSuffix;
+}
+
+exports.initialize = function(options, resultHandler)
+{
+	pathPrefix = options.pathPrefix;
+	pathSuffix = options.pathSuffix;
+
+	addTemplates(
+		options.templates,
+		resultHandler
 	);
 };
 
