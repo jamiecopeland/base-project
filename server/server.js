@@ -32,11 +32,11 @@ templater.initialize(
 		success: function()
 		{
 			var endTime = new Date();
-			console.log('templater.initialize success', endTime.getTime() - startTime.getTime());
+			console.log('Templater initialization time: ', endTime.getTime() - startTime.getTime());
 		},
 		error: function(error)
 		{
-			console.log('Templater.initialize >> ' + error.message);
+			console.log('Templater initialization error: ' + error.message);
 		}
 	}
 );

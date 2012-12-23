@@ -69,33 +69,6 @@ var Templater = BaseClass.extend(
 				}
 			);
 		},
-
-		// getTemplateByIdAsync: function(id, resultHandler)
-		// {
-		// 	var self = this;
-		// 	var cachedTemplate = this.rawTemplates[id];
-		// 	if(cachedTemplate)
-		// 	{
-		// 		resultHandler.success(cachedTemplate);
-		// 	}
-		// 	else
-		// 	{
-		// 		this.loadFile(
-		// 			this.getPathById(id),
-		// 			{
-		// 				success: function(data)
-		// 				{
-		// 					self.rawTemplates[id] = data;
-		// 					resultHandler.success(data);
-		// 				},
-		// 				error: function(error)
-		// 				{
-		// 					resultHandler.error(error);
-		// 				}
-		// 			}
-		// 		);
-		// 	}
-		// },
 		
 		addTemplates: function(templates, resultHandler)
 		{
@@ -207,7 +180,7 @@ exports.compile = function(id, data)
 // HANDLEBARS HELPERS
 
 Handlebars.registerHelper(
-	"includeTemplate",
+	"template",
 	function(templateName, data)
 	{
 		return templaterInstance.compile(templateName, data);
