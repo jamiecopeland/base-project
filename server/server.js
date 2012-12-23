@@ -14,19 +14,19 @@ var startTime = new Date();
 
 templater.initialize(
 	{
-		pathPrefix: rootPath + '/public/templates',
+		pathPrefix: __dirname + '/../public/templates',
 		pathSuffix: '.hbs',
-		unloadedTemplates: ['index', 'mainMenu'],
-		unloadedTemplates2: [
-			{
-				id: 'index',
-				path: rootPath + '/public/templates/index.hbs'
-			},
-			{
-				id: 'mainMenu',
-				path: rootPath + '/public/templates/mainMenu.hbs'
-			}
-		]
+		unloadedTemplates: ['index', 'mainMenu']
+		// unloadedTemplates: [
+		// 	{
+		// 		id: 'index',
+		// 		path: rootPath + '/public/templates/index.hbs'
+		// 	},
+		// 	{
+		// 		id: 'mainMenu',
+		// 		path: rootPath + '/public/templates/mainMenu.hbs'
+		// 	}
+		// ]
 	},
 	{
 		success: function()

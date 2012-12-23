@@ -2,11 +2,6 @@ var fs = require('fs');
 var _ = require('underscore');
 var Handlebars = require('handlebars');
 
-var rootPath = __dirname + '/..';
-var pathPrefix = '';
-var pathSuffix = '';
-var templatesFolderPath = rootPath + '/public/templates';
-
 var unloadedTemplates = [];
 var rawTemplates = {};
 var compiledTemplates = {};
@@ -38,168 +33,152 @@ var Templater = BaseClass.extend(
 	{
 		initialize: function(options, resultHandler)
 		{
-			pathPrefix = options.pathPrefix;
-			pathSuffix = options.pathSuffix;
+			this.pathPrefix = options.pathPrefix;
+			this.pathSuffix = options.pathSuffix;
 
-			addTemplates(
-				options.unloadedTemplates,
-				resultHandler
-			);
+			if(options.unloadedTemplates)
+			{
+				this.addTemplates(
+					options.unloadedTemplates,
+					resultHandler
+				);
+			}
 		},
 
 		compile: function(id, data)
 		{
-			var output = compile(id, data);
-			return compile(id, data);
+			return this.getCompiledTemplate(id)(data);
+		},
+
+		loadFile: function(fileName, resultHandler)
+		{
+			fs.readFile(
+				fileName,
+				'utf8',
+				function(err, data)
+				{
+					if(err)
+					{
+						resultHandler.error(err);
+					}
+					else
+					{
+						resultHandler.success(data);
+					}
+				}
+			);
+		},
+
+		getTemplateByIdAsync: function(id, resultHandler)
+		{
+			var cachedTemplate = rawTemplates[id];
+			if(cachedTemplate)
+			{
+				resultHandler.success(cachedTemplate);
+			}
+			else
+			{
+				this.loadFile(
+					this.getPathById(id),
+					{
+						success: function(data)
+						{
+							rawTemplates[id] = data;
+							resultHandler.success(data);
+						},
+						error: function(error)
+						{
+							resultHandler.error(error);
+						}
+					}
+				);
+			}
+		},
+		
+		addTemplates: function(templates, resultHandler)
+		{
+			var self = this;
+
+			_.each(
+				templates,
+				function(templateReference)
+				{
+					if(templateReference instanceof Object)
+					{
+						unloadedTemplates.push(templateReference);
+					}
+					else
+					{
+						unloadedTemplates.push(
+							{
+								id: templateReference,
+								path: self.getPathById(templateReference)
+							}
+						);	
+					}
+				}
+			);
+
+			this.loadNextTemplate(resultHandler);
+		},
+
+		loadNextTemplate: function(completionResultHandler)
+		{
+			var self = this;
+
+			if(unloadedTemplates.length > 0)
+			{
+				var template = unloadedTemplates[0];
+				
+				this.loadFile(
+					template.path,
+					{
+						success: function(data)
+						{
+							// Remove item from unloaded templates
+							unloadedTemplates.splice(unloadedTemplates.indexOf(template), 1);
+							
+							// Add item to the rawTemplatess
+							rawTemplates[template.id] = data;
+
+							self.loadNextTemplate(completionResultHandler);
+						},
+						error: function(error)
+						{
+							completionResultHandler.error(new Error('Error Loading Template: ' + template.id + ' - ' + template.path));
+						}
+					}
+				);
+			}
+			else
+			{
+				completionResultHandler.success();
+			}
+		},
+
+		getCompiledTemplate: function(id)
+		{
+			var compiledTemplate = compiledTemplates[id];
+			if(!compiledTemplate)
+			{
+				compiledTemplate = Handlebars.compile(rawTemplates[id]);
+				compiledTemplates[id] = compiledTemplate;
+			}
+
+			return compiledTemplate;
+		},
+
+		getPathById: function(id)
+		{
+			return this.pathPrefix + '/' + id + this.pathSuffix;
 		}
+
 	}
 );
 
 ///////////////////////////////////////////////////////////////
 
-function loadFile(fileName, resultHandler)
-{
-	fs.readFile(
-		fileName,
-		'utf8',
-		function(err, data)
-		{
-			if(err)
-			{
-				resultHandler.error(err);
-			}
-			else
-			{
-				resultHandler.success(data);
-			}
-		}
-	);
-}
 
-function getTemplateByIdAsync(id, resultHandler)
-{
-	var cachedTemplate = rawTemplates[id];
-	if(cachedTemplate)
-	{
-		resultHandler.success(cachedTemplate);
-	}
-	else
-	{
-		loadFile(
-			getPathById(id),
-			// templatesFolderPath + '/' + id + '.hbs',
-			{
-				success: function(data)
-				{
-					rawTemplates[id] = data;
-					resultHandler.success(data);
-				},
-				error: function(error)
-				{
-					resultHandler.error(error);
-				}
-			}
-		);
-	}
-}
-
-function addTemplate(id, resultHandler)
-{
-	loadFile(
-		templatesFolderPath + '/' + id + '.hbs',
-		{
-			success: function(data)
-			{
-				rawTemplates[id] = data;
-				resultHandler.success(data);
-			},
-			error: function(error)
-			{
-				resultHandler.error(error);
-			}
-		}
-	);
-}
-
-function addTemplates(templates, resultHandler)
-{
-	if(templates instanceof Array)
-	{
-		_.each(
-			templates,
-			function(template)
-			{
-				unloadedTemplates.push(
-					{
-						id: template,
-						path: getPathById(template)
-					}
-				);
-				// console.log(' adding template', template);
-			}
-		);
-
-		loadNextTemplate(resultHandler);
-	}
-	else
-	{
-
-	}
-}
-
-function loadNextTemplate(completionResultHandler)
-{
-	if(unloadedTemplates.length > 0)
-	{
-		var template = unloadedTemplates[0];
-		
-		loadFile(
-			template.path,
-			{
-				success: function(data)
-				{
-					// Remove item from unloaded templates
-					unloadedTemplates.splice(unloadedTemplates.indexOf(template), 1);
-					
-					// Add item to the rawTemplatess
-					rawTemplates[template.id] = data;
-
-					loadNextTemplate(completionResultHandler);
-				},
-				error: function(error)
-				{
-					completionResultHandler.error(new Error('Error Loading Template: ' + template.id + ' - ' + template.path));
-				}
-			}
-		);
-	}
-	else
-	{
-		completionResultHandler.success();
-	}
-}
-
-function getCompiledTemplate(id)
-{
-	var compiledTemplate = compiledTemplates[id];
-	if(!compiledTemplate)
-	{
-		compiledTemplate = Handlebars.compile(rawTemplates[id]);
-		compiledTemplates[id] = compiledTemplate;
-	}
-
-	return compiledTemplate;
-}
-
-function getPathById(id)
-{
-	return pathPrefix + '/' + id + pathSuffix;
-}
-
-function compile(id, data)
-{
-	return getCompiledTemplate(id)(data);
-}
 
 /////////////////////////////////////////////////////////////
 // PUBLIC METHODS
@@ -224,6 +203,6 @@ Handlebars.registerHelper(
 	"includeTemplate",
 	function(templateName, data)
 	{
-		return compile(templateName, data);
+		return templaterInstance.compile(templateName, data);
 	}
 );
