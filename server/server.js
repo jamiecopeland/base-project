@@ -16,7 +16,17 @@ templater.initialize(
 	{
 		pathPrefix: rootPath + '/public/templates',
 		pathSuffix: '.hbs',
-		unloadedTemplates: ['index', 'mainMenu']
+		unloadedTemplates: ['index', 'mainMenu'],
+		unloadedTemplates2: [
+			{
+				id: 'index',
+				path: rootPath + '/public/templates/index.hbs'
+			},
+			{
+				id: 'mainMenu',
+				path: rootPath + '/public/templates/mainMenu.hbs'
+			}
+		]
 	},
 	{
 		success: function()
@@ -67,18 +77,28 @@ var allowCrossDomain = function(req, res, next) {
 };
 app.use(allowCrossDomain);
 
+
 /////////////////////////////////////////////////////////////////
+// LANG
+
+var lang = {
+	title: 'This is the page title',
+	message:'This is dynamic!',
+	mainMenu:
+	{
+		title:'This is the menu title'
+	}
+};
+
+/////////////////////////////////////////////////////////////////
+// ROUTES
 
 app.get('/', function(request, response)
 {
 	var output = templater.compile(
 		'index',
 		{
-			message:'This is dynamic!',
-			mainMenu:
-			{
-				title:'This is the dynamic title'
-			}
+			lang: lang
 		}
 	);
 	response.send(output);

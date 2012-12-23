@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>Project Title</title>
+		<title>{{lang.title}}</title>
 		<meta name="description" content="Project Description">
 		<meta name="author" content="Jamie Copeland">
 		<link rel="stylesheet" href="styles/main.css">
@@ -11,8 +11,8 @@
 		<![endif]-->
 	</head>
 	<body>
-		{{{includeTemplate 'mainMenu' mainMenu}}}
-		<p>{{message}}</p>
+		{{{includeTemplate 'mainMenu' lang.mainMenu}}}
+		<p>{{lang.message}}</p>
 
 	<!-- <script id="requireScript" src="js/libs/require-2.1.1.min.js" data-main="js/boot.min"></script> -->
 	<script id="requireScript" src="js/libs/require-2.1.1.min.js" data-main="js/src/boot"></script>
