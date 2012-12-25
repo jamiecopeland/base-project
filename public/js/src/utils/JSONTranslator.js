@@ -1,15 +1,12 @@
 define(
 	[
-		'underscore',
-		'core/BaseClass'
+		'underscore'
 	],
 
 	function(
-		_,
-		BaseClass
+		_
 	)
 	{
-
 		//////////////////////////////////////////////////////////////////////////////////
 		// Unexposed methods
 
@@ -103,7 +100,7 @@ define(
 				}
 			);
 		};
-		
+
 		return JSONTranslator;
 	}
 );
