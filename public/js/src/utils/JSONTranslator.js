@@ -46,9 +46,24 @@ define(
 					);	
 				}
 
-				iterateOverChildren(json);
+				var clone = JSON.parse(JSON.stringify(json));
 
-				this.processTranslationList(translationList, this.translationMethod, resultHandler);
+				iterateOverChildren(clone);
+
+				this.processTranslationList(
+					translationList,
+					this.translationMethod,
+					{
+						success: function()
+						{
+							resultHandler.success(clone);
+						},
+						error: function(error)
+						{
+							resultHandler.error(error);
+						}
+					}
+				);
 			},
 
 			processTranslationList: function(translationList, translationMethod, resultHandler)

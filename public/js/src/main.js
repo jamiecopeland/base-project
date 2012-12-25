@@ -56,7 +56,7 @@ define(
 				{
 					success: function(json)
 					{
-						console.log('GoogleTranslate.translateJSON success', JSON.stringify(lang));
+						console.log('GoogleTranslate.translateJSON success', JSON.stringify(json));
 					},
 					error: function(error)
 					{
