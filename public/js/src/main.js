@@ -25,7 +25,7 @@ define(
 									q: object[property],
 									key: 'AIzaSyCDGRwMxD9d4idsJVGa91FpApOyxlR5DMQ',
 									source: 'en',
-									target: 'fr'
+									target: 'ja'
 								},
 								success: function(data)
 								{
@@ -50,6 +50,8 @@ define(
 					cats: 'cats like milk'
 				}
 			};
+
+			console.log('before', JSON.stringify(lang));
 
 			translator.translateJSON(
 				lang,

@@ -20,10 +20,9 @@ define(
 			translateJSON: function(json, resultHandler)
 			{
 				var self = this;
-				var deferreds = [];
-
 				var translationList = [];
 
+				// Recursively iterate over object to create a flat list
 				function iterateOverChildren(obj)
 				{
 					_.each(
