@@ -44,7 +44,7 @@ define(
 				resultHandler.success();
 			}
 
-			var translator = new JSONTranslator();
+			// var translator = new JSONTranslator();
 
 			var lang = {
 				title: 'This is the title',
@@ -65,7 +65,7 @@ define(
 
 			console.log('before', JSON.stringify(lang));
 
-			translator.translateJSON(
+			JSONTranslator.translateJSON(
 				lang,
 				doTestTranslate,
 				{
