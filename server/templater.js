@@ -106,29 +106,40 @@ var Templater = BaseClass.extend(
 				}
 			);
 		},
+
+		addTemplates: function(templates)
+		{
+			_.each(
+				templates,
+				function(template)
+				{
+					this.rawTemplates[template.id] = template.value;
+				},
+				this
+			);
+		},
 		
 		loadTemplates: function(templates, resultHandler)
 		{
-			var self = this;
-
 			_.each(
 				templates,
 				function(templateReference)
 				{
 					if(templateReference instanceof Object)
 					{
-						self.unloadedTemplates.push(templateReference);
+						this.unloadedTemplates.push(templateReference);
 					}
 					else
 					{
-						self.unloadedTemplates.push(
+						this.unloadedTemplates.push(
 							{
 								id: templateReference,
-								path: self.getPathById(templateReference)
+								path: this.getPathById(templateReference)
 							}
-						);	
+						);
 					}
-				}
+				},
+				this
 			);
 
 			this.loadNextTemplate(resultHandler);
