@@ -2,7 +2,6 @@ define(
 	[
 		'jquery',
 		'jsonTranslator'
-		// 'utils/JSONTranslator'
 	],
 	function(
 		$,
