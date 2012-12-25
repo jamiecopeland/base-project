@@ -1,12 +1,10 @@
 define(
 	[
-		'jquery',
 		'underscore',
 		'core/BaseClass'
 	],
 
 	function(
-		$,
 		_,
 		BaseClass
 	)
@@ -16,48 +14,15 @@ define(
 
 			initialize: function(options)
 			{
-				this.apiDomain = 'https://www.googleapis.com/language/translate/v2';
-				this.key = options.key;
-				this.defaultSource = options.defaultSource;
-				this.defaultTarget = options.defaultTarget;
-			},
-
-			translate: function(options, resultHandler)
-			{
-				return $.ajax(
-					{
-						url: this.apiDomain,
-						dataType: 'json',
-						data: this.createAjaxData(options),
-						success: resultHandler ? resultHandler.success : null,
-						error: resultHandler ? resultHandler.error : null
-					}
-				);
-			},
-
-			translateObjectProperty: function(object, property, options)
-			{
-				return this.translate(
-					{
-						q: object[property]
-					},
-					{
-						success: function(data)
-						{
-							object[property] = data.data.translations[0].translatedText;
-						},
-						error: function()
-						{
-							//TODO Deal with this
-						}
-					}
-				);
+				this.translationMethod = options.translationMethod;
 			},
 
 			translateJSON: function(json, resultHandler)
 			{
 				var self = this;
 				var deferreds = [];
+
+				var translationList = [];
 
 				function iterateOverChildren(obj)
 				{
@@ -71,7 +36,10 @@ define(
 							}
 							else
 							{
-								deferreds.push(self.translateObjectProperty(obj, key));
+								translationList.push({
+									object: obj,
+									property: key
+								});
 							}
 						},
 						this
@@ -80,31 +48,48 @@ define(
 
 				iterateOverChildren(json);
 
-				return $.when.apply(null, deferreds).then(
-					function(data, result)
-					{
-						if(result === 'success')
-						{
-							console.log('translateJSON error', error);
-							resultHandler.error(data);
-						}
-						else
-						{
-							console.log('translateJSON complete', JSON.stringify(json));
-							resultHandler.success(json);
-						}
-					}
-				);
+				this.processTranslationList(translationList, this.translationMethod, resultHandler);
 			},
 
-			createAjaxData: function(options)
+			processTranslationList: function(translationList, translationMethod, resultHandler)
 			{
-				return {
-					q: options.q,
-					key: options.key ? options.key : this.key,
-					source: options.source ? options.source : this.defaultSource,
-					target: options.target ? options.target : this.defaultTarget
-				};
+				var currentIndex = 0;
+
+				function onItemComplete()
+				{
+					currentIndex++;
+
+					processNextTranslation();
+				}
+
+				function processNextTranslation()
+				{
+					var item = translationList[currentIndex];
+
+					if(item === undefined)
+					{
+						resultHandler.success();
+					}
+					else
+					{
+						translationMethod(
+							item.object,
+							item.property,
+							{
+								success: function()
+								{
+									onItemComplete();
+								},
+								error: function()
+								{
+									resultHandler.error();
+								}
+							}
+						);
+					}					
+				}
+
+				processNextTranslation();
 			}
 		});
 	}

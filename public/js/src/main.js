@@ -14,10 +14,31 @@ define(
 
 			var translator = new GoogleTranslate(
 				{
-					apiDomain: 'https://www.googleapis.com/language/translate/v2',
-					key: 'AIzaSyCDGRwMxD9d4idsJVGa91FpApOyxlR5DMQ',
-					defaultSource: 'en',
-					defaultTarget: 'ja'
+					translationMethod: function(object, property, resultHandler)
+					{
+						$.ajax(
+							{
+								url: 'https://www.googleapis.com/language/translate/v2',
+								dataType: 'json',
+								data:
+								{
+									q: object[property],
+									key: 'AIzaSyCDGRwMxD9d4idsJVGa91FpApOyxlR5DMQ',
+									source: 'en',
+									target: 'fr'
+								},
+								success: function(data)
+								{
+									object[property] = data.data.translations[0].translatedText;
+									resultHandler.success();
+								},
+								error: function(error)
+								{
+									resultHandler.error(error);
+								}
+							}
+						);
+					}
 				}
 			);
 
@@ -30,12 +51,14 @@ define(
 				}
 			};
 
+
+
 			translator.translateJSON(
 				lang,
 				{
 					success: function(json)
 					{
-						console.log('GoogleTranslate.translateJSON success', JSON.stringify(json));
+						console.log('GoogleTranslate.translateJSON success', JSON.stringify(lang));
 					},
 					error: function(error)
 					{
