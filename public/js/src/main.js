@@ -44,8 +44,6 @@ define(
 				resultHandler.success();
 			}
 
-			// var translator = new JSONTranslator();
-
 			var lang = {
 				title: 'This is the title',
 				subTitle: 'This is the sub title',
