@@ -1,18 +1,18 @@
 define(
 	[
 		'jquery',
-		'utils/GoogleTranslate'
+		'utils/JSONTranslator'
 	],
 	function(
 		$,
-		GoogleTranslate
+		JSONTranslator
 	)
 	{
 		return function()
 		{
 			// App start point
 
-			var translator = new GoogleTranslate(
+			var translator = new JSONTranslator(
 				{
 					translationMethod: function(object, property, resultHandler)
 					{
@@ -50,8 +50,6 @@ define(
 					cats: 'cats like milk'
 				}
 			};
-
-
 
 			translator.translateJSON(
 				lang,
