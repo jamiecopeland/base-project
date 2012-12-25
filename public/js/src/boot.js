@@ -65,6 +65,7 @@ require([
 	'backbone',
 	'backbone-validation',
 	'handlebars',
+	'jsonTranslator',
 	'text',
 	'domReady'
 	// 'lang'
@@ -78,6 +79,7 @@ require([
 	Backbone,
 	BackboneValidation,
 	Handlebars,
+	JSONTranslator,
 	TextPlugin,
 	domReady
 	// lang

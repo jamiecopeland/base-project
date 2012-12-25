@@ -1,7 +1,8 @@
 define(
 	[
 		'jquery',
-		'utils/JSONTranslator'
+		'jsonTranslator'
+		// 'utils/JSONTranslator'
 	],
 	function(
 		$,
@@ -10,6 +11,7 @@ define(
 	{
 		return function()
 		{
+
 			// App start point
 
 			function doGoogleTranslate(object, property, resultHandler)
