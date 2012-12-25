@@ -10,6 +10,8 @@ define(
 			
 		};
 
+		BaseClass.prototype.initialize = function(){};
+
 		BaseClass.extend = function(newPrototype)
 		{
 			var output = function()

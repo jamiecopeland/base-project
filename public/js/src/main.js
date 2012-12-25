@@ -12,7 +12,6 @@ define(
 		{
 			// App start point
 
-
 			function doGoogleTranslate(object, property, resultHandler)
 			{
 				$.ajax(
@@ -45,12 +44,7 @@ define(
 				resultHandler.success();
 			}
 
-			var translator = new JSONTranslator(
-				{
-					translationMethod: doGoogleTranslate
-					// translationMethod: doTestTranslate
-				}
-			);
+			var translator = new JSONTranslator();
 
 			var lang = {
 				title: 'This is the title',
@@ -73,6 +67,7 @@ define(
 
 			translator.translateJSON(
 				lang,
+				doTestTranslate,
 				{
 					success: function(json)
 					{

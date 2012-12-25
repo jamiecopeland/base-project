@@ -12,6 +12,7 @@ require.config({
 		'backbone': '../libs/backbone-0.9.9',
 		'backbone-validation': '../libs/backbone-validation-0.6.2',
 		'handlebars': '../libs/handlebars-1.0.rc.1',
+		'jsonTranslator': '../libs/JSONTranslator',
 		'lang': '/js/translations',
 		'text': '../libs/text-2.0.3',
 		'domReady': '../libs/domReady-2.0.1',
@@ -44,6 +45,10 @@ require.config({
 		},
 		'handlebars': {
 			exports: 'Handlebars'
+		},
+		'jsonTranslator': {
+			deps: ['underscore'],
+			exports: 'JSONTranslator'
 		}
 	}
 });

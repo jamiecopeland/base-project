@@ -12,12 +12,7 @@ define(
 		return BaseClass.extend(
 		{
 
-			initialize: function(options)
-			{
-				this.translationMethod = options.translationMethod;
-			},
-
-			translateJSON: function(json, resultHandler)
+			translateJSON: function(json, translationMethod, resultHandler)
 			{
 				var self = this;
 				var translationList = [];
@@ -51,7 +46,7 @@ define(
 
 				this.processTranslationList(
 					translationList,
-					this.translationMethod,
+					translationMethod,
 					{
 						success: function()
 						{
