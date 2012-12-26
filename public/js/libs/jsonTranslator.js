@@ -4,9 +4,7 @@
 	var root = this;
 
 	// Save the previous value of JSONTranslator
-	var previousUnderscore = root.JSONTranslator;
-
-	var _ = root._;
+	var previousJSONTranslator = root.JSONTranslator;
 
 	function processTranslationList(translationList, translationMethod, resultHandler)
 	{
@@ -42,7 +40,7 @@
 						}
 					}
 				);
-			}					
+			}
 		}
 
 		processNextTranslation();
@@ -58,24 +56,22 @@
 		// Recursively iterate over object to create a flat list
 		function iterateOverChildren(obj)
 		{
-			_.each(
-				obj,
-				function(value, key)
+			for(var key in obj)
+			{
+				var value = obj[key];
+
+				if(value instanceof Object)
 				{
-					if(value instanceof Object)
-					{
-						iterateOverChildren(value);
-					}
-					else
-					{
-						translationList.push({
-							object: obj,
-							property: key
-						});
-					}
-				},
-				this
-			);	
+					iterateOverChildren(value);
+				}
+				else
+				{
+					translationList.push({
+						object: obj,
+						property: key
+					});
+				}
+			}
 		}
 
 		var clone = JSON.parse(JSON.stringify(json));

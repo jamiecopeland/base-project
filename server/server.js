@@ -5,7 +5,9 @@ var port = 3000;
 var express = require('express');
 var fs = require('fs');
 var Handlebars = require('handlebars');
+var _ = require('underscore');
 var templater = require(rootPath + '/server/templater.js');
+var JSONTranslator = require(rootPath + '/public/js/libs/jsonTranslator.js');
 
 /////////////////////////////////////////////////////////////////
 // TEMPLATER SETUP
@@ -87,9 +89,40 @@ var lang = {
 	message:'This is dynamic!',
 	mainMenu:
 	{
-		title:'This is the menu title'
+		title:'This is the menu title',
+		items:
+			{
+				one: 'one',
+				two: 'two'
+			}
 	}
 };
+
+function doTestTranslate(object, property, resultHandler)
+{
+	object[property] = 'test';
+	resultHandler.success();
+}
+
+// console.log('_', _);
+// console.log('JSONTranslator', JSONTranslator.JSONTranslator.translateJSON);
+
+JSONTranslator.JSONTranslator.translateJSON(
+	lang,
+	doTestTranslate,
+	{
+		success: function(json)
+		{
+			console.log('GoogleTranslate.translateJSON success', JSON.stringify(json));
+
+			lang = json;
+		},
+		error: function(error)
+		{
+			console.log('GoogleTranslate.translateJSON error: ', error);
+		}
+	}
+);
 
 /////////////////////////////////////////////////////////////////
 // ROUTES

@@ -11,6 +11,26 @@ define(
 		return function()
 		{
 
+			var lang = {
+				penny: 'Penelope',
+				title: 'This is the title',
+				subTitle: 'This is the sub title',
+				landingPage: {
+					monkey: 'monkeys like bananas',
+					cats: 'cats like milk'
+				},
+				numbers:
+				{
+					one: 'one',
+					two: 'two',
+					three: 'three',
+					four: 'four',
+					five: 'five'
+				}
+			};
+
+			console.log('before', JSON.stringify(lang));
+
 			// App start point
 
 			function doGoogleTranslate(object, property, resultHandler)
@@ -24,7 +44,7 @@ define(
 							q: object[property],
 							key: 'AIzaSyCDGRwMxD9d4idsJVGa91FpApOyxlR5DMQ',
 							source: 'en',
-							target: 'fr'
+							target: 'ja'
 						},
 						success: function(data)
 						{
@@ -45,39 +65,22 @@ define(
 				resultHandler.success();
 			}
 
-			var lang = {
-				title: 'This is the title',
-				subTitle: 'This is the sub title',
-				landingPage: {
-					monkey: 'monkeys like bananas',
-					cats: 'cats like milk'
-				},
-				numbers:
-				{
-					one: 'one',
-					two: 'two',
-					three: 'three',
-					four: 'four',
-					five: 'five'
-				}
-			};
+			
 
-			console.log('before', JSON.stringify(lang));
-
-			JSONTranslator.translateJSON(
-				lang,
-				doTestTranslate,
-				{
-					success: function(json)
-					{
-						console.log('GoogleTranslate.translateJSON success', JSON.stringify(json));
-					},
-					error: function(error)
-					{
-						console.log('GoogleTranslate.translateJSON error: ', error);
-					}
-				}
-			);
+			// JSONTranslator.translateJSON(
+			// 	lang,
+			// 	doGoogleTranslate,
+			// 	{
+			// 		success: function(json)
+			// 		{
+			// 			console.log('GoogleTranslate.translateJSON success', JSON.stringify(json));
+			// 		},
+			// 		error: function(error)
+			// 		{
+			// 			console.log('GoogleTranslate.translateJSON error: ', error);
+			// 		}
+			// 	}
+			// );
 		};
 	}
 );
