@@ -1,10 +1,5 @@
 
-/////////////////////////////////////////////////////////////////
-// SYSTEM SETTINGS
-
 var rootPath = __dirname + '/..';
-var port = 3000;
-
 
 /////////////////////////////////////////////////////////////////
 // DEPENDENCIES
@@ -19,6 +14,37 @@ var _ = require('underscore');
 // Project imports
 var templater = require(rootPath + '/server/templater.js');
 var JSONTranslator = require(rootPath + '/public/js/libs/jsonTranslator.js');
+
+
+/////////////////////////////////////////////////////////////////
+// SYSTEM SETTINGS
+
+/////////////////////////////////////////////////////////////////
+// CONFIG
+
+var config = {
+	port: 3000
+};
+
+function loadUserConfig(completeHandler)
+{
+	fs.readFile(
+		rootPath + '/server/user-config.json',
+		'utf8',
+		function(err, data)
+		{
+			if(err)
+			{
+				completeHandler(false);
+			}
+			else
+			{
+				_.extend(config, JSON.parse(data));
+				completeHandler(true);
+			}
+		}
+	);
+}
 
 /////////////////////////////////////////////////////////////////
 // TEMPLATER SETUP
@@ -108,6 +134,7 @@ var lang = {
 	}
 };
 
+
 function doTestTranslate(object, property, resultHandler)
 {
 	object[property] = 'test';
@@ -120,8 +147,8 @@ function doGoogleTranslate(object, property, resultHandler)
 	translate(
 		{
 			q: value,
-			target: 'ja',
-			key: 'AIzaSyCDGRwMxD9d4idsJVGa91FpApOyxlR5DMQ'
+			target: 'eo',
+			key: config.googleTranslateKey
 		},
 		function(result)
 		{
@@ -131,21 +158,29 @@ function doGoogleTranslate(object, property, resultHandler)
 	);
 }
 
-JSONTranslator.translateJSON(
-	lang,
-	doGoogleTranslate,
-	{
-		success: function(json)
+function translateLang(resultHandler)
+{
+	JSONTranslator.translateJSON(
+		lang,
+		doGoogleTranslate,
+		// doTestTranslate,
 		{
-			console.log(json);
-			lang = json;
-		},
-		error: function(error)
-		{
-			console.log('GoogleTranslate.translateJSON error: ', error);
+			success: function(json)
+			{
+				// console.log(json);
+				lang = json;
+				resultHandler.success();
+			},
+			error: function(error)
+			{
+				console.log('GoogleTranslate.translateJSON error: ', error);
+				resultHandler.error();
+			}
 		}
-	}
-);
+	);
+}
+
+
 
 /////////////////////////////////////////////////////////////////
 // ROUTES
@@ -164,8 +199,44 @@ app.get('/', function(request, response)
 /////////////////////////////////////////////////////////////////
 // STARTUP
 
-app.listen(port);
+function onUserConfigLoadComplete()
+{
+	translateLang(
+		{
+			success: function()
+			{
+				onTranslateComplete();
+			},
+			error: function()
+			{
+				
+			}
+		}
+	);
+}
 
-console.log('----------------------------------------------------');
-console.log(' SERVER STARTED ON PORT ' + port);
-console.log('----------------------------------------------------');
+function onTranslateComplete()
+{
+	onSetupComplete();
+}
+
+function onSetupComplete()
+{
+	app.listen(config.port);
+
+	console.log('----------------------------------------------------');
+	console.log(' SERVER STARTED ON PORT ' + config.port);
+	console.log('----------------------------------------------------');
+}
+
+function boot()
+{
+	loadUserConfig(
+		function()
+		{
+			onUserConfigLoadComplete();
+		}
+	);
+}
+
+boot();
