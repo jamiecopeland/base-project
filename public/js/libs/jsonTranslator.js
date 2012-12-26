@@ -6,6 +6,25 @@
 	// Save the previous value of JSONTranslator
 	var previousJSONTranslator = root.JSONTranslator;
 
+
+	var JSONTranslator = function(){};
+
+
+	// If we're running in node.js
+	if (typeof exports !== 'undefined')
+	{
+		if (typeof module !== 'undefined' && module.exports)
+		{
+			exports = module.exports = JSONTranslator;
+		}
+		exports.JSONTranslator = JSONTranslator;
+	}
+	else
+	{
+		root.JSONTranslator = JSONTranslator;
+	}
+
+
 	function processTranslationList(translationList, translationMethod, resultHandler)
 	{
 		var currentIndex = 0;
@@ -46,7 +65,7 @@
 		processNextTranslation();
 	}
 
-	var JSONTranslator = function(){};
+	
 
 	JSONTranslator.translateJSON = function(json, translationMethod, resultHandler)
 	{

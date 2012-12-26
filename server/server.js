@@ -113,7 +113,7 @@ function doGoogleTranslate(object, property, resultHandler)
 	translate(
 		{
 			q: value,
-			target: 'de',
+			target: 'ja',
 			key: 'AIzaSyCDGRwMxD9d4idsJVGa91FpApOyxlR5DMQ'
 		},
 		function(result)
@@ -125,12 +125,13 @@ function doGoogleTranslate(object, property, resultHandler)
 }
 
 
-JSONTranslator.JSONTranslator.translateJSON(
+JSONTranslator.translateJSON(
 	lang,
 	doGoogleTranslate,
 	{
 		success: function(json)
 		{
+			console.log(json);
 			lang = json;
 		},
 		error: function(error)
@@ -139,6 +140,10 @@ JSONTranslator.JSONTranslator.translateJSON(
 		}
 	}
 );
+
+
+// console.log('JSONTranslator', JSONTranslator.translateJSON);
+
 
 /////////////////////////////////////////////////////////////////
 // ROUTES
