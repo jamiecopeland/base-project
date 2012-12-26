@@ -113,6 +113,13 @@
 		);
 	};
 
+	
+	JSONTranslator.noConflict = function()
+	{
+		root.JSONTranslator = previousJSONTranslator;
+		return this;
+	};
+
 	root.JSONTranslator = JSONTranslator;
 
 }).call(this);
