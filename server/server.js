@@ -7,6 +7,7 @@ var fs = require('fs');
 var translate = require('node-google-translate');
 var Handlebars = require('handlebars');
 var _ = require('underscore');
+
 var templater = require(rootPath + '/server/templater.js');
 var JSONTranslator = require(rootPath + '/public/js/libs/jsonTranslator.js');
 
@@ -117,7 +118,6 @@ function doGoogleTranslate(object, property, resultHandler)
 		},
 		function(result)
 		{
-			console.log(result);
 			object[property] = result[value];
 			resultHandler.success();
 		}
@@ -131,8 +131,6 @@ JSONTranslator.JSONTranslator.translateJSON(
 	{
 		success: function(json)
 		{
-			console.log('GoogleTranslate.translateJSON success', JSON.stringify(json));
-
 			lang = json;
 		},
 		error: function(error)
