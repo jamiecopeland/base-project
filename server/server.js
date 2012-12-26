@@ -4,10 +4,12 @@ var port = 3000;
 
 var express = require('express');
 var fs = require('fs');
+var translate = require('node-google-translate');
 var Handlebars = require('handlebars');
 var _ = require('underscore');
 var templater = require(rootPath + '/server/templater.js');
 var JSONTranslator = require(rootPath + '/public/js/libs/jsonTranslator.js');
+
 
 /////////////////////////////////////////////////////////////////
 // TEMPLATER SETUP
@@ -104,12 +106,28 @@ function doTestTranslate(object, property, resultHandler)
 	resultHandler.success();
 }
 
-// console.log('_', _);
-// console.log('JSONTranslator', JSONTranslator.JSONTranslator.translateJSON);
+function doGoogleTranslate(object, property, resultHandler)
+{
+	var value = object[property];
+	translate(
+		{
+			q: value,
+			target: 'de',
+			key: 'AIzaSyCDGRwMxD9d4idsJVGa91FpApOyxlR5DMQ'
+		},
+		function(result)
+		{
+			console.log(result);
+			object[property] = result[value];
+			resultHandler.success();
+		}
+	);
+}
+
 
 JSONTranslator.JSONTranslator.translateJSON(
 	lang,
-	doTestTranslate,
+	doGoogleTranslate,
 	{
 		success: function(json)
 		{
