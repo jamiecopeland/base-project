@@ -1,16 +1,24 @@
 
+/////////////////////////////////////////////////////////////////
+// SYSTEM SETTINGS
+
 var rootPath = __dirname + '/..';
 var port = 3000;
 
+
+/////////////////////////////////////////////////////////////////
+// DEPENDENCIES
+
+// External imports
 var express = require('express');
 var fs = require('fs');
 var translate = require('node-google-translate');
 var Handlebars = require('handlebars');
 var _ = require('underscore');
 
+// Project imports
 var templater = require(rootPath + '/server/templater.js');
 var JSONTranslator = require(rootPath + '/public/js/libs/jsonTranslator.js');
-
 
 /////////////////////////////////////////////////////////////////
 // TEMPLATER SETUP
@@ -46,7 +54,6 @@ templater.initialize(
 		}
 	}
 );
-
 
 /////////////////////////////////////////////////////////////////
 // EXPRESS SETUP
@@ -124,7 +131,6 @@ function doGoogleTranslate(object, property, resultHandler)
 	);
 }
 
-
 JSONTranslator.translateJSON(
 	lang,
 	doGoogleTranslate,
@@ -140,10 +146,6 @@ JSONTranslator.translateJSON(
 		}
 	}
 );
-
-
-// console.log('JSONTranslator', JSONTranslator.translateJSON);
-
 
 /////////////////////////////////////////////////////////////////
 // ROUTES
