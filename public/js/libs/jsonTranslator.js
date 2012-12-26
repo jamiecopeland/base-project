@@ -1,14 +1,14 @@
 
 (function(){
 
+	/////////////////////////////////////////////////////////////////////////////
+	// SETUP AND ENVIRONMENT
 	var root = this;
 
 	// Save the previous value of JSONTranslator
 	var previousJSONTranslator = root.JSONTranslator;
 
-
 	var JSONTranslator = function(){};
-
 
 	// If we're running in node.js
 	if (typeof exports !== 'undefined')
@@ -24,6 +24,14 @@
 		root.JSONTranslator = JSONTranslator;
 	}
 
+	JSONTranslator.noConflict = function()
+	{
+		root.JSONTranslator = previousJSONTranslator;
+		return this;
+	};
+
+	/////////////////////////////////////////////////////////////////////////////
+	// UNEXPORTED METHODS
 
 	function processTranslationList(translationList, translationMethod, resultHandler)
 	{
@@ -65,7 +73,8 @@
 		processNextTranslation();
 	}
 
-	
+	/////////////////////////////////////////////////////////////////////////////
+	// EXPORTED METHODS
 
 	JSONTranslator.translateJSON = function(json, translationMethod, resultHandler)
 	{
@@ -113,12 +122,8 @@
 		);
 	};
 
+
 	
-	JSONTranslator.noConflict = function()
-	{
-		root.JSONTranslator = previousJSONTranslator;
-		return this;
-	};
 
 	root.JSONTranslator = JSONTranslator;
 
