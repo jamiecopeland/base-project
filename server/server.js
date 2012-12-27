@@ -147,7 +147,8 @@ function doGoogleTranslate(object, property, resultHandler)
 	translate(
 		{
 			q: value,
-			target: 'eo',
+			source: 'en',
+			target: 'ko',
 			key: config.googleTranslateKey
 		},
 		function(result)
@@ -158,18 +159,18 @@ function doGoogleTranslate(object, property, resultHandler)
 	);
 }
 
-function translateLang(resultHandler)
+function translateJSON(options, resultHandler)
 {
 	JSONTranslator.translateJSON(
-		lang,
+		options.json,
 		doGoogleTranslate,
 		// doTestTranslate,
 		{
 			success: function(json)
 			{
 				// console.log(json);
-				lang = json;
-				resultHandler.success();
+				// lang = json;
+				resultHandler.success(json);
 			},
 			error: function(error)
 			{
@@ -196,12 +197,36 @@ app.get('/', function(request, response)
 	response.send(output);
 });
 
+app.post('/translate', function(request, response)
+{
+	// var output = {'message': 'hello there!!'}
+
+	console.log('request.body.target', request.body.target);
+
+	translateJSON(
+		request.body.json,
+		{
+			success: function(data)
+			{
+				console.log('node successfully translated on server: ', data);
+				response.send(data);
+			},
+			error: function()
+			{
+				next(new Error('The translator went wrong'));
+			}
+		}
+	);
+});
+
 /////////////////////////////////////////////////////////////////
 // STARTUP
 
 function onUserConfigLoadComplete()
 {
-	translateLang(
+	// onSetupComplete();
+	translateJSON(
+		lang,
 		{
 			success: function()
 			{

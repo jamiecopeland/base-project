@@ -33,23 +33,22 @@ define(
 
 			// App start point
 
-			function doGoogleTranslate(object, property, resultHandler)
+			function doNodeTranslation(json, resultHandler)
 			{
 				$.ajax(
 					{
-						url: 'https://www.googleapis.com/language/translate/v2',
+						url: '/translate',
+						type: 'POST',
 						dataType: 'json',
 						data:
 						{
-							q: object[property],
-							key: 'AIzaSyCDGRwMxD9d4idsJVGa91FpApOyxlR5DMQ',
+							json: json,
 							source: 'en',
 							target: 'ja'
 						},
 						success: function(data)
 						{
-							object[property] = data.data.translations[0].translatedText;
-							resultHandler.success();
+							resultHandler.success(data);
 						},
 						error: function(error)
 						{
@@ -59,28 +58,19 @@ define(
 				);
 			}
 
-			function doTestTranslate(object, property, resultHandler)
-			{
-				object[property] = 'test';
-				resultHandler.success();
-			}
-
-			
-
-			// JSONTranslator.translateJSON(
-			// 	lang,
-			// 	doGoogleTranslate,
-			// 	{
-			// 		success: function(json)
-			// 		{
-			// 			console.log('GoogleTranslate.translateJSON success', JSON.stringify(json));
-			// 		},
-			// 		error: function(error)
-			// 		{
-			// 			console.log('GoogleTranslate.translateJSON error: ', error);
-			// 		}
-			// 	}
-			// );
+			doNodeTranslation(
+				lang,
+				{
+					success: function(data)
+					{
+						console.log('doNodeTranslation success: ', data);
+					},
+					error: function(error)
+					{
+						console.log('doNodeTranslation error');
+					}
+				}
+			);
 		};
 	}
 );

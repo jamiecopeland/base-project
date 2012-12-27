@@ -1,4 +1,77 @@
 
+
+// // Simple translation - to fixed value
+// function doTestTranslate(object, property, resultHandler)
+// {
+// 	object[property] = 'test';
+// 	resultHandler.success();
+// }
+
+// // Server side translation using node-google-translate package
+// function doGoogleTranslateServerSide(object, property, resultHandler)
+// {
+// 	var value = object[property];
+// 	translate(
+// 		{
+// 			q: value,
+// 			target: 'el',
+// 			key: <INSERT_YOUR_API_KEY>
+// 		},
+// 		function(result)
+// 		{
+// 			object[property] = result[value];
+// 			resultHandler.success();
+// 		}
+// 	);
+// }
+
+// // Client side translation using jquery.ajax
+// function doGoogleTranslateClientSide(object, property, resultHandler)
+// {
+// 	$.ajax(
+// 		{
+// 			url: 'https://www.googleapis.com/language/translate/v2',
+// 			dataType: 'json',
+// 			data:
+// 			{
+// 				q: object[property],
+// 				key: <INSERT_YOUR_API_KEY>,
+// 				source: 'en',
+// 				target: 'ja'
+// 			},
+// 			success: function(data)
+// 			{
+// 				object[property] = data.data.translations[0].translatedText;
+// 				resultHandler.success();
+// 			},
+// 			error: function(error)
+// 			{
+// 				resultHandler.error(error);
+// 			}
+// 		}
+// 	);
+// }
+// 
+// // Example implementation
+// function translateJSON(json, resultHandler)
+// {
+// 	JSONTranslator.translateJSON(
+// 		json,
+// 		doTestTranslate,
+// 		{
+// 			success: function(json)
+// 			{
+// 				console.log('JSONTranslator success: ', json);
+// 			},
+// 			error: function(error)
+// 			{
+// 				console.log('JSONTranslator error: ', error);
+// 			}
+// 		}
+// 	);
+// }
+
+
 (function(){
 
 	/////////////////////////////////////////////////////////////////////////////
