@@ -58,19 +58,19 @@ define(
 				);
 			}
 
-			doNodeTranslation(
-				lang,
-				{
-					success: function(data)
-					{
-						console.log('doNodeTranslation success: ', data);
-					},
-					error: function(error)
-					{
-						console.log('doNodeTranslation error');
-					}
-				}
-			);
+			// doNodeTranslation(
+			// 	lang,
+			// 	{
+			// 		success: function(data)
+			// 		{
+			// 			console.log('doNodeTranslation success: ', data);
+			// 		},
+			// 		error: function(error)
+			// 		{
+			// 			console.log('doNodeTranslation error');
+			// 		}
+			// 	}
+			// );
 		};
 	}
 );

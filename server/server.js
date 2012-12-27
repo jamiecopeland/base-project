@@ -135,41 +135,66 @@ var lang = {
 };
 
 
-function doTestTranslate(object, property, resultHandler)
-{
-	object[property] = 'test';
-	resultHandler.success();
-}
+// function doTestTranslate(object, property, resultHandler)
+// {
+// 	object[property] = 'test';
+// 	resultHandler.success();
+// }
 
-function doGoogleTranslate(object, property, resultHandler)
-{
-	var value = object[property];
-	translate(
-		{
-			q: value,
-			source: 'en',
-			target: 'ko',
-			key: config.googleTranslateKey
-		},
-		function(result)
-		{
-			object[property] = result[value];
-			resultHandler.success();
-		}
-	);
-}
+// function doGoogleTranslate(object, property, resultHandler)
+// {
+// 	var value = object[property];
+// 	translate(
+// 		{
+// 			q: value,
+// 			source: 'en',
+// 			target: 'ko',
+// 			key: config.googleTranslateKey
+// 		},
+// 		function(result)
+// 		{
+// 			object[property] = result[value];
+// 			resultHandler.success();
+// 		}
+// 	);
+// }
 
 function translateJSON(options, resultHandler)
 {
 	JSONTranslator.translateJSON(
 		options.json,
-		doGoogleTranslate,
+		// doGoogleTranslate,
 		// doTestTranslate,
+
+		function(object, property, resultHandler)
+		{
+			object[property] = '**' + object[property] + '**';
+			resultHandler.success();
+		},
+
+		// function(object, property, resultHandler)
+		// {
+		// 	var value = object[property];
+		// 	translate(
+		// 		{
+		// 			q: value,
+		// 			source: options.source,
+		// 			target: options.target,
+		// 			key: config.googleTranslateKey
+		// 		},
+		// 		function(result)
+		// 		{
+		// 			object[property] = result[value];
+		// 			resultHandler.success();
+		// 		}
+		// 	);
+		// },
+
 		{
 			success: function(json)
 			{
 				// console.log(json);
-				// lang = json;
+				lang = json;
 				resultHandler.success(json);
 			},
 			error: function(error)
@@ -204,7 +229,11 @@ app.post('/translate', function(request, response)
 	console.log('request.body.target', request.body.target);
 
 	translateJSON(
-		request.body.json,
+		{
+			json: request.body.json,
+			source: 'en',
+			target: 'fr'
+		},
 		{
 			success: function(data)
 			{
@@ -226,7 +255,11 @@ function onUserConfigLoadComplete()
 {
 	// onSetupComplete();
 	translateJSON(
-		lang,
+		{
+			json: lang,
+			source: 'en',
+			target: 'fr'
+		},
 		{
 			success: function()
 			{
