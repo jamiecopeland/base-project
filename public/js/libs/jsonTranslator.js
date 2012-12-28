@@ -104,6 +104,56 @@
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
+
+	var ActualTranslator = function(){};
+
+	ActualTranslator.prototype.translateJSON = function(json, translationMethod, resultHandler)
+	{
+		var self = this;
+		var translationList = [];
+
+		// Recursively iterate over object to create a flat list
+		function iterateOverChildren(obj)
+		{
+			for(var key in obj)
+			{
+				var value = obj[key];
+
+				if(value instanceof Object)
+				{
+					iterateOverChildren(value);
+				}
+				else
+				{
+					translationList.push({
+						object: obj,
+						property: key
+					});
+				}
+			}
+		}
+
+		var clone = JSON.parse(JSON.stringify(json));
+
+		iterateOverChildren(clone);
+
+		processTranslationList(
+			translationList,
+			translationMethod,
+			{
+				success: function()
+				{
+					resultHandler.success(clone);
+				},
+				error: function(error)
+				{
+					resultHandler.error(error);
+				}
+			}
+		);
+	}
+
+	/////////////////////////////////////////////////////////////////////////////
 	// UNEXPORTED METHODS
 
 	function processTranslationList(translationList, translationMethod, resultHandler)
@@ -151,48 +201,9 @@
 
 	exporter.translateJSON = function(json, translationMethod, resultHandler)
 	{
-		var self = this;
-		var translationList = [];
+		var instance = new ActualTranslator();
 
-		// Recursively iterate over object to create a flat list
-		function iterateOverChildren(obj)
-		{
-			for(var key in obj)
-			{
-				var value = obj[key];
-
-				if(value instanceof Object)
-				{
-					iterateOverChildren(value);
-				}
-				else
-				{
-					translationList.push({
-						object: obj,
-						property: key
-					});
-				}
-			}
-		}
-
-		var clone = JSON.parse(JSON.stringify(json));
-
-		iterateOverChildren(clone);
-
-		processTranslationList(
-			translationList,
-			translationMethod,
-			{
-				success: function()
-				{
-					resultHandler.success(clone);
-				},
-				error: function(error)
-				{
-					resultHandler.error(error);
-				}
-			}
-		);
+		instance.translateJSON(json, translationMethod, resultHandler);
 	};
 
 }).call(this);
