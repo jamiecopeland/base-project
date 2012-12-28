@@ -195,9 +195,4 @@
 		);
 	};
 
-
-	
-
-	root.JSONTranslator = exporter;
-
 }).call(this);
