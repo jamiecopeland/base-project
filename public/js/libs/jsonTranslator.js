@@ -81,23 +81,23 @@
 	// Save the previous value of JSONTranslator
 	var previousJSONTranslator = root.JSONTranslator;
 
-	var JSONTranslator = function(){};
+	var exporter = function(){};
 
 	// If we're running in node.js
 	if (typeof exports !== 'undefined')
 	{
 		if (typeof module !== 'undefined' && module.exports)
 		{
-			exports = module.exports = JSONTranslator;
+			exports = module.exports = exporter;
 		}
-		exports.JSONTranslator = JSONTranslator;
+		exports.JSONTranslator = exporter;
 	}
 	else
 	{
-		root.JSONTranslator = JSONTranslator;
+		root.JSONTranslator = exporter;
 	}
 
-	JSONTranslator.noConflict = function()
+	exporter.noConflict = function()
 	{
 		root.JSONTranslator = previousJSONTranslator;
 		return this;
@@ -149,7 +149,7 @@
 	/////////////////////////////////////////////////////////////////////////////
 	// EXPORTED METHODS
 
-	JSONTranslator.translateJSON = function(json, translationMethod, resultHandler)
+	exporter.translateJSON = function(json, translationMethod, resultHandler)
 	{
 		var self = this;
 		var translationList = [];
@@ -198,6 +198,6 @@
 
 	
 
-	root.JSONTranslator = JSONTranslator;
+	root.JSONTranslator = exporter;
 
 }).call(this);
