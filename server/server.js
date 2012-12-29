@@ -23,7 +23,8 @@ var JSONTranslator = require(rootPath + '/public/js/libs/jsonTranslator.js');
 // CONFIG
 
 var config = {
-	port: 3000
+	port: 3000,
+	googleTranslateKey: "YOUR_API_KEY_HERE"
 };
 
 function loadUserConfig(completeHandler)
