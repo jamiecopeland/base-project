@@ -28,8 +28,15 @@
 	{
 		environment = 'browser';
 
-		_ = root._;
-		Handlebars = root.Handlebars;
+		if (!_ && (typeof require !== 'undefined'))
+		{
+			_ = require('underscore');
+		}
+
+		if (!Handlebars && (typeof require !== 'undefined'))
+		{
+			Handlebars = require('handlebars');
+		}
 
 		root.Templater = Templater;
 	}

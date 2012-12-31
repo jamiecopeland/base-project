@@ -51,7 +51,6 @@ function loadUserConfig(completeHandler)
 // TEMPLATER SETUP
 
 var templater;
-
 var loader = new MultiLoader(
 	{
 		pathPrefix: __dirname + '/../public/templates',
@@ -237,6 +236,30 @@ app.post('/translate', function(request, response)
 		}
 	);
 });
+
+app.get(
+	'/copy.js',
+	function(request, response)
+	{
+		// Very simple first pass implementation - obviously using caching here in future
+		fs.readFile(
+			rootPath + '/public/translations/lang_en-gb.js',
+			'utf8',
+			function(err, data)
+			{
+				if(err)
+				{
+					// Do something if we can't load the data
+				}
+				else
+				{
+					response.set('Content-Type', 'application/javascript');
+					response.send(data);
+				}
+			}
+		);
+	}
+);
 
 /////////////////////////////////////////////////////////////////
 // STARTUP

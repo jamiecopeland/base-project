@@ -13,7 +13,7 @@ define([
 
 	var Router = StatefulRouter.extend({
 		
-		start: function(rootView)
+		start: function(rootView, templater)
 		{
 			this.rootView = rootView;
 			Backbone.history.start({pushState: false});

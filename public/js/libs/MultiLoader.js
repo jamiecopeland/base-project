@@ -27,7 +27,15 @@
 	{
 		environment = 'browser';
 
-		_ = root._;
+		if (!_ && (typeof require !== 'undefined'))
+		{
+			_ = require('underscore');
+		}
+
+		if (!$ && (typeof require !== 'undefined'))
+		{
+			$ = require('jquery');
+		}
 
 		root.MultiLoader = MultiLoader;
 	}
@@ -51,12 +59,11 @@
 					}
 					else
 					{
-						this.deriveLoaderType();
+						this.loaderType = this.deriveLoaderType();
 					}
 
 					this.pathPrefix = options.pathPrefix;
 					this.pathSuffix = options.pathSuffix;
-					this.loaderType = options.loaderType;
 
 					if(options.unloadedTemplates)
 					{
@@ -68,7 +75,7 @@
 				}
 				else
 				{
-					this.deriveLoaderType();
+					this.loaderType = this.deriveLoaderType();
 				}
 			},
 
@@ -76,11 +83,11 @@
 			{
 				if(typeof window === 'undefined')
 				{
-					this.loaderType = 'serverLocal';
+					return 'serverLocal';
 				}
 				else
 				{
-					this.loaderType = 'browserRemote';
+					return 'browserRemote';
 				}
 			},
 

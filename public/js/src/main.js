@@ -3,36 +3,26 @@ define(
 		'jquery',
 		'backbone',
 		'jsonTranslator',
+		'multiloader',
+		'templater',
 		'utils/EventBus',
-		'config/Router'
+		'config/Router',
+		'views/RootView'
 	],
 	function(
 		$,
 		Backbone,
 		JSONTranslator,
+		MultiLoader,
+		Templater,
 		EventBus,
-		Router
+		Router,
+		RootView
 	)
 	{
 		return function()
 		{
-
-			var lang = {
-				title: 'This is the page title',
-				message:'This is dynamic!',
-				mainMenu:
-				{
-					title:'This is the menu title',
-					items:
-						{
-							one: 'one',
-							two: 'two',
-							three: 'three'
-						}
-				}
-			};
-
-			console.log('before', JSON.stringify(lang));
+			
 			
 			// App start point
 
@@ -75,8 +65,55 @@ define(
 			// 	}
 			// );
 
-			Router.start();
-			EventBus.trigger('startup.initializationComplete');
+			////////////////////////////////////////////////////////////
+
+			var templater;
+			var loader = new MultiLoader(
+				{
+					// pathPrefix: '../templates',
+					// pathSuffix: '.hbs',
+					// unloadedTemplates: ['index', 'mainMenu']
+
+					unloadedTemplates: [
+						{
+							id: 'root',
+							path: '../templates/root.hbs'
+						},
+						{
+							id: 'mainMenu',
+							path: '../templates/mainMenu.hbs'
+						}
+					]
+				},
+				{
+					success: function()
+					{
+						templater = new Templater({rawTemplates: loader.rawTemplates});
+						startup();
+					},
+					error: function()
+					{
+						console.log('MultiLoader error');
+					}
+				}
+			);
+
+			////////////////////////////////////////////////////////////
+
+			function startup()
+			{
+				this.rootView = new RootView(
+					{
+						el: $('#root'),
+						templater: templater
+					}
+				);
+
+				Router.start(this.rootView);
+				EventBus.trigger('startup.initializationComplete');
+			}
 		};
+
+
 	}
 );

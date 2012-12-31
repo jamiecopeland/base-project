@@ -1,3 +1,4 @@
+
 require.config({
 	// Map libraries and longer path names to shorter ones
 	paths: {
@@ -13,7 +14,9 @@ require.config({
 		'backbone-validation': '../libs/backbone-validation-0.6.2',
 		'handlebars': '../libs/handlebars-1.0.rc.1',
 		'jsonTranslator': '../libs/JSONTranslator',
-		'lang': '/js/translations',
+		'multiloader': '../libs/multiloader',
+		'templater': '../libs/templater',
+		'lang': '../../copy',
 		'text': '../libs/text-2.0.3',
 		'domReady': '../libs/domReady-2.0.1',
 		'templates': '../../templates'
@@ -49,6 +52,17 @@ require.config({
 		'jsonTranslator': {
 			deps: ['underscore'],
 			exports: 'JSONTranslator'
+		},
+		'multiloader': {
+			deps: ['underscore', 'jquery'],
+			exports: 'MultiLoader'
+		},
+		'templater': {
+			deps: ['underscore', 'handlebars'],
+			exports: 'Templater'
+		},
+		'lang': {
+			exports: 'lang'
 		}
 	}
 });
