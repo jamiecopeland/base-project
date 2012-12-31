@@ -1,6 +1,8 @@
 define(
 	[
+		'lang',
 		'jquery',
+		'underscore',
 		'backbone',
 		'jsonTranslator',
 		'multiloader',
@@ -10,7 +12,9 @@ define(
 		'views/RootView'
 	],
 	function(
+		lang,
 		$,
+		_,
 		Backbone,
 		JSONTranslator,
 		MultiLoader,
@@ -56,7 +60,10 @@ define(
 			// 	{
 			// 		success: function(data)
 			// 		{
-			// 			console.log('doNodeTranslation success: ', data);
+						
+			// 			lang = data;
+
+			// 			_.extend(lang, data);
 			// 		},
 			// 		error: function(error)
 			// 		{
@@ -65,10 +72,16 @@ define(
 			// 	}
 			// );
 
+			loadTemplates();
+
 			////////////////////////////////////////////////////////////
 
 			var templater;
-			var loader = new MultiLoader(
+			var loader;
+
+			function loadTemplates()
+			{
+				loader = new MultiLoader(
 				{
 					// pathPrefix: '../templates',
 					// pathSuffix: '.hbs',
@@ -97,6 +110,7 @@ define(
 					}
 				}
 			);
+			}
 
 			////////////////////////////////////////////////////////////
 
