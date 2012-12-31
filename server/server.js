@@ -1,5 +1,7 @@
 
+//TODO Tidy this up!
 var rootPath = __dirname + '/..';
+global.ROOT_PATH = __dirname + '/..';
 
 /////////////////////////////////////////////////////////////////
 // DEPENDENCIES
@@ -12,9 +14,9 @@ var Handlebars = require('handlebars');
 var _ = require('underscore');
 
 // Project imports
-var templater = require(rootPath + '/server/templater.js');
+var Templater = require(rootPath + '/public/js/libs/templater.js');
 var JSONTranslator = require(rootPath + '/public/js/libs/jsonTranslator.js');
-var MultiLoader = require(rootPath + '/public/js/libs/MultiLoader.js');
+var MultiLoader = require(rootPath + '/public/js/libs/multiLoader.js');
 
 /////////////////////////////////////////////////////////////////
 // SYSTEM SETTINGS
@@ -50,12 +52,7 @@ function loadUserConfig(completeHandler)
 /////////////////////////////////////////////////////////////////
 // TEMPLATER SETUP
 
-
-
-
-
-
-// console.log('MultiLoader: ', MultiLoader);
+var templater;
 
 var loader = new MultiLoader(
 	{
@@ -78,45 +75,11 @@ var loader = new MultiLoader(
 	{
 		success: function()
 		{
-			console.log('MultiLoader success');
+			templater = new Templater({rawTemplates: loader.rawTemplates});
 		},
 		error: function()
 		{
 			console.log('MultiLoader error');
-		}
-	}
-);
-
-
-
-var startTime = new Date();
-
-templater.initialize(
-	{
-		pathPrefix: __dirname + '/../public/templates',
-		pathSuffix: '.hbs',
-		loaderType: 'serverLocal',
-		unloadedTemplates: ['index', 'mainMenu']
-		// unloadedTemplates: [
-		// 	{
-		// 		id: 'index',
-		// 		path: rootPath + '/public/templates/index.hbs'
-		// 	},
-		// 	{
-		// 		id: 'mainMenu',
-		// 		path: rootPath + '/public/templates/mainMenu.hbs'
-		// 	}
-		// ]
-	},
-	{
-		success: function()
-		{
-			var endTime = new Date();
-			console.log('Templater initialization time: ', endTime.getTime() - startTime.getTime());
-		},
-		error: function(error)
-		{
-			console.log('Templater initialization error: ' + error.message);
 		}
 	}
 );
@@ -245,8 +208,6 @@ function translateJSON(options, resultHandler)
 		}
 	);
 }
-
-
 
 /////////////////////////////////////////////////////////////////
 // ROUTES
