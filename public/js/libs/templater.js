@@ -1,12 +1,8 @@
 (function(){
-	var rootPath = __dirname + '/..';
 
-	console.log('rootPath', global.ROOT_PATH);
-
-	var fs = require('fs');
-	var _ = require('underscore');
-	var Handlebars = require('handlebars');
-	var MultiLoader = require(global.ROOT_PATH + '/public/js/libs/MultiLoader.js');
+	var fs;
+	var _;
+	var Handlebars;
 
 	///////////////////////////////////////////////////////////
 	// SETUP ENVIRONMENT AND EXPORTS
@@ -21,11 +17,20 @@
 	if(typeof root.window === 'undefined')
 	{
 		environment = 'node';
+
+		fs = require('fs');
+		_ = require('underscore');
+		Handlebars = require('handlebars');
+
 		module.exports = exports = Templater;
 	}
 	else
 	{
 		environment = 'browser';
+
+		_ = root._;
+		Handlebars = root.Handlebars;
+
 		root.Templater = Templater;
 	}
 

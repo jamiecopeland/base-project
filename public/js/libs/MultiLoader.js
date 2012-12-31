@@ -1,6 +1,8 @@
 (function(){
-	var _ = require('underscore');
-	var fs = require('fs');
+	
+	var _;
+	var fs;
+	var $;
 
 	///////////////////////////////////////////////////////////
 	// SETUP ENVIRONMENT AND EXPORTS
@@ -15,11 +17,18 @@
 	if(typeof root.window === 'undefined')
 	{
 		environment = 'node';
+
+		_ = require('underscore');
+		fs = require('fs');
+
 		module.exports = exports = MultiLoader;
 	}
 	else
 	{
 		environment = 'browser';
+
+		_ = root._;
+
 		root.MultiLoader = MultiLoader;
 	}
 

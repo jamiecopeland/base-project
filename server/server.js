@@ -1,7 +1,5 @@
 
-//TODO Tidy this up!
 var rootPath = __dirname + '/..';
-global.ROOT_PATH = __dirname + '/..';
 
 /////////////////////////////////////////////////////////////////
 // DEPENDENCIES
