@@ -14,7 +14,7 @@ var _ = require('underscore');
 // Project imports
 var templater = require(rootPath + '/server/templater.js');
 var JSONTranslator = require(rootPath + '/public/js/libs/jsonTranslator.js');
-
+var MultiLoader = require(rootPath + '/public/js/libs/MultiLoader.js');
 
 /////////////////////////////////////////////////////////////////
 // SYSTEM SETTINGS
@@ -55,8 +55,37 @@ function loadUserConfig(completeHandler)
 
 
 
+// console.log('MultiLoader: ', MultiLoader);
 
+var loader = new MultiLoader(
+	{
+		pathPrefix: __dirname + '/../public/templates',
+		pathSuffix: '.hbs',
+		loaderType: 'serverLocal',
+		// unloadedTemplates: ['index', 'mainMenu']
 
+		unloadedTemplates: [
+			{
+				id: 'index',
+				path: rootPath + '/public/templates/index.hbs'
+			},
+			{
+				id: 'mainMenu',
+				path: rootPath + '/public/templates/mainMenu.hbs'
+			}
+		]
+	},
+	{
+		success: function()
+		{
+			console.log('MultiLoader success');
+		},
+		error: function()
+		{
+			console.log('MultiLoader error');
+		}
+	}
+);
 
 
 
