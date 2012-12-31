@@ -50,6 +50,16 @@ function loadUserConfig(completeHandler)
 /////////////////////////////////////////////////////////////////
 // TEMPLATER SETUP
 
+
+
+
+
+
+
+
+
+
+
 var startTime = new Date();
 
 templater.initialize(

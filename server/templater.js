@@ -28,12 +28,75 @@ var Templater = BaseClass.extend(
 	{
 		initialize: function(options, resultHandler)
 		{
-
-			this.unloadedTemplates = [];
 			this.rawTemplates = {};
 			this.compiledTemplates = {};
 
+			this.rawTemplates = options.rawTemplates;
+		},
 
+		compile: function(id, data)
+		{
+			return this.getCompiledTemplate(id)(data);
+		},
+
+		addTemplates: function(templates)
+		{
+			_.each(
+				templates,
+				function(template)
+				{
+					this.rawTemplates[template.id] = template.value;
+				},
+				this
+			);
+		},
+
+		//////////////////////////////////////////////////////////////////////
+
+		getCompiledTemplate: function(id)
+		{
+			var compiledTemplate = this.compiledTemplates[id];
+			if(!compiledTemplate)
+			{
+				compiledTemplate = Handlebars.compile(this.getRawTemplate(id));
+				this.compiledTemplates[id] = compiledTemplate;
+			}
+
+			return compiledTemplate;
+		},
+
+		getRawTemplate: function(id)
+		{
+			return this.rawTemplates[id];
+		}
+	}
+);
+
+///////////////////////////////////////////////////////////////
+// TEMPLATER
+
+var MultiLoader = BaseClass.extend(
+	{
+		initialize: function(options, resultHandler)
+		{
+			if(options.loaderType)
+			{
+				this.loaderType = options.loaderType;
+			}
+			else
+			{
+				if(typeof window === 'undefined')
+				{
+					this.loaderType = 'serverLocal';
+				}
+				else
+				{
+					this.loaderType = 'browserRemote';
+				}
+			}
+
+			this.unloadedTemplates = [];
+			this.rawTemplates = {};
 
 			this.pathPrefix = options.pathPrefix;
 			this.pathSuffix = options.pathSuffix;
@@ -48,14 +111,9 @@ var Templater = BaseClass.extend(
 			}
 		},
 
-		compile: function(id, data)
-		{
-			return this.getCompiledTemplate(id)(data);
-		},
-
 		loadFile: function(path, resultHandler)
 		{
-			// TODO Refact
+			// TODO Refactor
 			switch(this.loaderType)
 			{
 				case 'serverLocal':
@@ -63,19 +121,10 @@ var Templater = BaseClass.extend(
 				break;
 
 				case 'browserRemote':
-					$.ajax(
-						{
-							url: path,
-							success: resultHandler.success,
-							error: resultHandler.error
-						}
-					);
+					this.loadBrowserRemote(path,resultHandler);
 				break;
 			}
 		},
-
-		/////////////////////////////////////////////////////
-		// LOADER TYPES
 
 		loadServerLocal: function(filePath, resultHandler)
 		{
@@ -96,7 +145,7 @@ var Templater = BaseClass.extend(
 			);
 		},
 
-		loadBrowserRemote: function()
+		loadBrowserRemote: function(fileName, resultHandler)
 		{
 			$.ajax(
 				{
@@ -104,18 +153,6 @@ var Templater = BaseClass.extend(
 					success: resultHandler.success,
 					error: resultHandler.error
 				}
-			);
-		},
-
-		addTemplates: function(templates)
-		{
-			_.each(
-				templates,
-				function(template)
-				{
-					this.rawTemplates[template.id] = template.value;
-				},
-				this
 			);
 		},
 		
@@ -179,28 +216,10 @@ var Templater = BaseClass.extend(
 			}
 		},
 
-		getCompiledTemplate: function(id)
-		{
-			var compiledTemplate = this.compiledTemplates[id];
-			if(!compiledTemplate)
-			{
-				compiledTemplate = Handlebars.compile(this.getRawTemplate(id));
-				this.compiledTemplates[id] = compiledTemplate;
-			}
-
-			return compiledTemplate;
-		},
-
-		getRawTemplate: function(id)
-		{
-			return this.rawTemplates[id];
-		},
-
 		getPathById: function(id)
 		{
 			return this.pathPrefix + '/' + id + this.pathSuffix;
 		}
-
 	}
 );
 
@@ -212,16 +231,35 @@ var Templater = BaseClass.extend(
 // PUBLIC METHODS
 
 var templaterInstance;
+var multiLoader;
 
 exports.initialize = function(options, resultHandler)
 {
-	templaterInstance = new Templater(options, resultHandler);
+	// templaterInstance = new Templater(options, resultHandler);
+
+	multiLoader = new MultiLoader(
+		options,
+		{
+			success: function()
+			{
+				templaterInstance = new Templater({rawTemplates: multiLoader.rawTemplates});
+
+				resultHandler.success();
+			},
+			error: function()
+			{
+				resultHandler.error();
+			}
+		});
 };
 
 exports.compile = function(id, data)
 {
 	return templaterInstance.compile(id, data);
 };
+
+// exports.MultiLoader = MultiLoader;
+// exports.Templater = Templater;
 
 //////////////////////////////////////////////////////////////
 // HANDLEBARS HELPERS
