@@ -61,8 +61,12 @@ var loader = new MultiLoader(
 
 		unloadedTemplates: [
 			{
-				id: 'index',
-				path: rootPath + '/public/templates/index.hbs'
+				id: 'index-traditional',
+				path: rootPath + '/public/templates/index-traditional.hbs'
+			},
+			{
+				id: 'index-single-page',
+				path: rootPath + '/public/templates/index-single-page.hbs'
 			},
 			{
 				id: 'mainMenu',
@@ -130,7 +134,8 @@ var lang = {
 		items:
 			{
 				one: 'one',
-				two: 'two'
+				two: 'two',
+				three: 'three'
 			}
 	}
 };
@@ -185,10 +190,21 @@ function translateJSON(options, resultHandler)
 /////////////////////////////////////////////////////////////////
 // ROUTES
 
-app.get('/', function(request, response)
+app.get('/traditional', function(request, response)
 {
 	var output = templater.compile(
-		'index',
+		'index-traditional',
+		{
+			lang: lang
+		}
+	);
+	response.send(output);
+});
+
+app.get('/single-page', function(request, response)
+{
+	var output = templater.compile(
+		'index-single-page',
 		{
 			lang: lang
 		}

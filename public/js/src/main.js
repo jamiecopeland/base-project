@@ -1,36 +1,39 @@
 define(
 	[
 		'jquery',
-		'jsonTranslator'
+		'backbone',
+		'jsonTranslator',
+		'utils/EventBus',
+		'config/Router'
 	],
 	function(
 		$,
-		JSONTranslator
+		Backbone,
+		JSONTranslator,
+		EventBus,
+		Router
 	)
 	{
 		return function()
 		{
 
 			var lang = {
-				penny: 'Penelope',
-				title: 'This is the title',
-				subTitle: 'This is the sub title',
-				landingPage: {
-					monkey: 'monkeys like bananas',
-					cats: 'cats like milk'
-				},
-				numbers:
+				title: 'This is the page title',
+				message:'This is dynamic!',
+				mainMenu:
 				{
-					one: 'one',
-					two: 'two',
-					three: 'three',
-					four: 'four',
-					five: 'five'
+					title:'This is the menu title',
+					items:
+						{
+							one: 'one',
+							two: 'two',
+							three: 'three'
+						}
 				}
 			};
 
 			console.log('before', JSON.stringify(lang));
-
+			
 			// App start point
 
 			function doNodeTranslation(json, resultHandler)
@@ -71,6 +74,9 @@ define(
 			// 		}
 			// 	}
 			// );
+
+			Router.start();
+			EventBus.trigger('startup.initializationComplete');
 		};
 	}
 );
