@@ -135,31 +135,6 @@ var lang = {
 	}
 };
 
-
-// function doTestTranslate(object, property, resultHandler)
-// {
-// 	object[property] = 'test';
-// 	resultHandler.success();
-// }
-
-// function doGoogleTranslate(object, property, resultHandler)
-// {
-// 	var value = object[property];
-// 	translate(
-// 		{
-// 			q: value,
-// 			source: 'en',
-// 			target: 'ko',
-// 			key: config.googleTranslateKey
-// 		},
-// 		function(result)
-// 		{
-// 			object[property] = result[value];
-// 			resultHandler.success();
-// 		}
-// 	);
-// }
-
 function translateJSON(options, resultHandler)
 {
 	JSONTranslator.translateJSON(
