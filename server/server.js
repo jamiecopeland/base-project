@@ -22,8 +22,7 @@ var MultiLoader = require(rootPath + '/public/js/libs/multiLoader.js');
 
 var primaryLanguage = 'en';
 var primaryLanguageJSON;
-
-
+var templater;
 
 var sequence = {
 		serverConfig: function(callback)
@@ -59,13 +58,53 @@ var sequence = {
 					}
 					else
 					{
-						primaryLanguageJSON = data;
+						console.log('setting primaryLanguageJSON');
+						primaryLanguageJSON = JSON.parse(data);
 						callback(null, primaryLanguageJSON);
+					}
+				}
+			);
+		},
+		templates: function(callback)
+		{
+
+			var loader = new MultiLoader(
+				{
+					pathPrefix: __dirname + '/../public/templates',
+					pathSuffix: '.hbs',
+					loaderType: 'serverLocal',
+					// unloadedTemplates: ['index', 'mainMenu']
+
+					unloadedTemplates: [
+						{
+							id: 'index-traditional',
+							path: rootPath + '/public/templates/index-traditional.hbs'
+						},
+						{
+							id: 'index-single-page',
+							path: rootPath + '/public/templates/index-single-page.hbs'
+						},
+						{
+							id: 'mainMenu',
+							path: rootPath + '/public/templates/mainMenu.hbs'
+						}
+					]
+				},
+				{
+					success: function()
+					{
+						templater = new Templater({rawTemplates: loader.rawTemplates});
+						callback(null, templater);
+					},
+					error: function()
+					{
+						callback(new Error());
 					}
 				}
 			);
 		}
 };
+
 
 
 _.each(
@@ -76,7 +115,7 @@ _.each(
 		{
 			translateJSON(
 				{
-					json: lang,
+					json: primaryLanguageJSON,
 					source: primaryLanguage,
 					target: language
 				},
@@ -90,7 +129,6 @@ _.each(
 							{
 								if(err)
 								{
-									console.log('happning here????');
 									callback(new Error());
 								}
 								else
@@ -124,40 +162,6 @@ var config = {
 /////////////////////////////////////////////////////////////////
 // TEMPLATER SETUP
 
-var templater;
-var loader = new MultiLoader(
-	{
-		pathPrefix: __dirname + '/../public/templates',
-		pathSuffix: '.hbs',
-		loaderType: 'serverLocal',
-		// unloadedTemplates: ['index', 'mainMenu']
-
-		unloadedTemplates: [
-			{
-				id: 'index-traditional',
-				path: rootPath + '/public/templates/index-traditional.hbs'
-			},
-			{
-				id: 'index-single-page',
-				path: rootPath + '/public/templates/index-single-page.hbs'
-			},
-			{
-				id: 'mainMenu',
-				path: rootPath + '/public/templates/mainMenu.hbs'
-			}
-		]
-	},
-	{
-		success: function()
-		{
-			templater = new Templater({rawTemplates: loader.rawTemplates});
-		},
-		error: function()
-		{
-			console.log('MultiLoader error');
-		}
-	}
-);
 
 /////////////////////////////////////////////////////////////////
 // EXPRESS SETUP
@@ -166,7 +170,6 @@ var app = express();
 
 //Set the public folder
 app.use(express.static(__dirname + '/../public'));
-
 app.use(express.methodOverride());
 
 app.configure(
@@ -196,21 +199,6 @@ app.use(allowCrossDomain);
 
 /////////////////////////////////////////////////////////////////
 // LANG
-
-var lang = {
-	title: 'This is the page title',
-	message:'This is dynamic!',
-	mainMenu:
-	{
-		title:'This is the menu title',
-		items:
-			{
-				one: 'one',
-				two: 'two',
-				three: 'three'
-			}
-	}
-};
 
 function translateJSON(options, resultHandler)
 {
@@ -255,49 +243,6 @@ function translateJSON(options, resultHandler)
 	);
 }
 
-// function exportLanguages()
-// {
-// 	_.each(
-// 		['fr', 'ja', 'el'],
-// 		function(language)
-// 		{
-// 			translateJSON(
-// 				{
-// 					json: lang,
-// 					source: 'en',
-// 					target: language
-// 				},
-// 				{
-// 					success: function(json)
-// 					{
-						
-
-// 						fs.writeFile(
-// 							rootPath + "/public/translations/lang_" + language + ".json",
-// 							JSON.stringify(json),
-// 							function(err)
-// 							{
-// 								if(err)
-// 								{
-// 									console.log(err);
-// 								}
-// 								else
-// 								{
-// 									console.log("Language translated: " + language);
-// 								}
-// 							}
-// 						);
-// 					},
-// 					error: function()
-// 					{
-						
-// 					}
-// 				}
-// 			);
-// 		}
-// 	);
-// }
-
 /////////////////////////////////////////////////////////////////
 // ROUTES
 
@@ -306,7 +251,7 @@ app.get('/traditional', function(request, response)
 	var output = templater.compile(
 		'index-traditional',
 		{
-			lang: lang
+			lang: primaryLanguageJSON
 		}
 	);
 	response.send(output);
@@ -317,7 +262,7 @@ app.get('/single-page', function(request, response)
 	var output = templater.compile(
 		'index-single-page',
 		{
-			lang: lang
+			lang: primaryLanguageJSON
 		}
 	);
 	response.send(output);
@@ -375,8 +320,6 @@ app.get(
 
 /////////////////////////////////////////////////////////////////
 // STARTUP
-
-
 
 function boot()
 {

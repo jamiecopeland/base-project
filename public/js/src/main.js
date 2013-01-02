@@ -30,7 +30,7 @@ define(
 		{
 			// App start point
 			var templater;
-			var language = 'ja';
+			var language = 'fr';
 
 			////////////////////////////////////////////////////////////
 
