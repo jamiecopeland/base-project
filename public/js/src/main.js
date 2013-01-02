@@ -29,8 +29,16 @@ define(
 		return function()
 		{
 			// App start point
+
 			var templater;
-			var language = 'fr';
+			var urlLanguage = getURLParameter('locale').split('-')[0];
+			var language = urlLanguage ? urlLanguage : 'en';
+
+			// TODO: Move this out into a utility
+			function getURLParameter(name)
+			{
+				return decodeURI((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]);
+			}
 
 			////////////////////////////////////////////////////////////
 

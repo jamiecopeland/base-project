@@ -28,8 +28,6 @@ define(
 
 			render: function()
 			{
-				console.log('RootView Lang', Lang);
-
 				var output = this.templater.compile(
 					'root',
 					{

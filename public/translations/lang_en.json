@@ -1,15 +1,15 @@
 {
 	"title": "This is the page title",
-	"message":"This is dynamic! a",
+	"message":"This is dynamic!",
 	"mainMenu":
 	{
 		"title":"This is the menu title",
 		"items":
 			{
-				"one": "one",
-				"two": "two",
-				"three": "three",
-				"four": "four"
+				"banana": "Banana",
+				"apple": "Apple",
+				"pear": "Pear",
+				"kiwi": "Kiwi"
 			}
 	}
 }
