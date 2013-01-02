@@ -29,15 +29,18 @@ define(
 		return function()
 		{
 			// App start point
-
+			var locale = parseLocale();
 			var templater;
-			var urlLanguage = getURLParameter('locale').split('-')[0];
-			var language = urlLanguage ? urlLanguage : 'en';
 
-			// TODO: Move this out into a utility
-			function getURLParameter(name)
+			function parseLocale()
 			{
-				return decodeURI((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]);
+				var rawLocale = $.url(location.href).param('locale');
+				var splitLocale = rawLocale ? rawLocale.split('-') : [];
+
+				return {
+					language: splitLocale[0] ? splitLocale[0] : 'en',
+					country: splitLocale[1] ? splitLocale[1] : 'global'
+				};
 			}
 
 			////////////////////////////////////////////////////////////
@@ -46,7 +49,7 @@ define(
 			{
 				return $.ajax(
 					{
-						url: '/translations/lang_'+language+'.json',
+						url: '/translations/lang_' + locale.language + '.json',
 						type: 'GET',
 						dataType: 'json',
 						success: function(data)
@@ -104,22 +107,17 @@ define(
 			).done(
 				function()
 				{
-					onInitialLoadComplete();
+					this.rootView = new RootView(
+						{
+							el: $('#root'),
+							templater: templater
+						}
+					);
+
+					Router.start(this.rootView);
+					EventBus.trigger('startup.initializationComplete');
 				}
 			);
-
-			function onInitialLoadComplete()
-			{
-				this.rootView = new RootView(
-					{
-						el: $('#root'),
-						templater: templater
-					}
-				);
-
-				Router.start(this.rootView);
-				EventBus.trigger('startup.initializationComplete');
-			}
 		};
 
 

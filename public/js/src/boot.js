@@ -7,6 +7,7 @@ require.config({
 		'jquery-easing': '../libs/jquery-easing-1.3',
 		'jquery-transit': '../libs/jquery-transit-0.1.3',
 		'jquery-ui-custom-min': '../libs/jquery-ui-1.8.24.custom.min',
+		'jquery-url-parser': '../libs/jquery-url-parser-2.2.1',
 		// 'bootstrap': '../libs/bootstrap-2.1.1',
 		'underscore': '../libs/underscore-1.4.2',
 		'underscoreMixins': 'utils/UnderscoreMixins',
@@ -29,6 +30,9 @@ require.config({
 		},
 		'jquery-easing': {
 			deps: ['jquery', 'jquery-ui-custom-min']
+		},
+		'jquery-url-parser': {
+			deps: ['jquery']
 		},
 		// 'bootstrap': {
 		// 	deps: ['jquery']
@@ -73,6 +77,7 @@ require([
 	'json2',
 	'jquery',
 	'jquery-easing',
+	'jquery-url-parser',
 	// 'bootstrap',
 	'underscore',
 	'underscoreMixins',
@@ -87,6 +92,7 @@ require([
 	json2,
 	$,
 	easing,
+	jqueryUrlParser,
 	// bootstrap,
 	_,
 	_mixins,
