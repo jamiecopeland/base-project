@@ -268,20 +268,15 @@ app.get('/single-page', function(request, response)
 
 app.post('/translate', function(request, response)
 {
-	// var output = {'message': 'hello there!!'}
-
-	console.log('request.body.target', request.body.target);
-
 	translateJSON(
 		{
 			json: request.body.json,
-			source: 'en',
-			target: 'fr'
+			source: request.body.source ? request.body.source : 'en',
+			target: request.body.target
 		},
 		{
 			success: function(data)
 			{
-				console.log('node successfully translated on server: ', data);
 				response.send(data);
 			},
 			error: function()

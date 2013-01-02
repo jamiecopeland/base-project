@@ -44,6 +44,18 @@
 	///////////////////////////////////////////////////////////////
 	// TEMPLATER
 
+	var _instance;
+
+	_.extend(
+		Templater,
+		{
+			getInstance: function()
+			{
+				return _instance;
+			}
+		}
+	);
+
 	_.extend(
 		Templater.prototype,
 		{
@@ -53,6 +65,8 @@
 				this.compiledTemplates = options.compiledTemplates ? options.compiledTemplates : {};
 
 				this.createHandlebarsHelper();
+
+				_instance = this;
 			},
 
 			compile: function(id, data)

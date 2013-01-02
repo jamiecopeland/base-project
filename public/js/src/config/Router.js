@@ -35,12 +35,12 @@ define([
 
 		onRoute_home: function()
 		{
-			console.log('Router.onRoute_home');
+			// console.log('Router.onRoute_home');
 		},
 
 		onRoute_test: function()
 		{
-			console.log('Router.onRoute_test');
+			// console.log('Router.onRoute_test');
 		},
 
 		onInitializationComplete: function()

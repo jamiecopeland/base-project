@@ -10,6 +10,7 @@ define(
 		'config/Router',
 		'config/Config',
 		'config/Lang',
+		'config/TemplateImporter',
 		'views/RootView'
 	],
 	function(
@@ -23,14 +24,20 @@ define(
 		Router,
 		Config,
 		Lang,
+		TemplateImporter,
 		RootView
 	)
 	{
 		return function()
 		{
-			// App start point
+			////////////////////////////////////////////////////////////
+			// VARIABLES
+
 			var locale = parseLocale();
 			var templater;
+
+			////////////////////////////////////////////////////////////
+			// METHODS
 
 			function parseLocale()
 			{
@@ -42,8 +49,6 @@ define(
 					country: splitLocale[1] ? splitLocale[1] : 'global'
 				};
 			}
-
-			////////////////////////////////////////////////////////////
 
 			function loadLang(resultHandler)
 			{
@@ -61,52 +66,15 @@ define(
 			}
 
 			////////////////////////////////////////////////////////////
-
-			function loadTemplates()
-			{
-				var deferred = $.Deferred();
-
-				var multiLoader = new MultiLoader(
-					{
-						// pathPrefix: '../templates',
-						// pathSuffix: '.hbs',
-						// unloadedTemplates: ['index', 'mainMenu']
-
-						unloadedTemplates: [
-							{
-								id: 'root',
-								path: '../templates/root.hbs'
-							},
-							{
-								id: 'mainMenu',
-								path: '../templates/mainMenu.hbs'
-							}
-						]
-					},
-					{
-						success: function()
-						{
-							templater = new Templater({rawTemplates: multiLoader.rawTemplates});
-							deferred.resolve();
-						},
-						error: function()
-						{
-							console.log('MultiLoader error');
-						}
-					}
-				);
-
-				return deferred;
-			}
-
-			////////////////////////////////////////////////////////////
+			// STARTUP
 
 			$.when(
-				loadLang(),
-				loadTemplates()
+				loadLang()
 			).done(
 				function()
 				{
+					templater = new Templater({rawTemplates: TemplateImporter});
+
 					this.rootView = new RootView(
 						{
 							el: $('#root'),
@@ -119,7 +87,5 @@ define(
 				}
 			);
 		};
-
-
 	}
 );
