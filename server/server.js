@@ -58,7 +58,6 @@ var sequence = {
 					}
 					else
 					{
-						console.log('setting primaryLanguageJSON');
 						primaryLanguageJSON = JSON.parse(data);
 						callback(null, primaryLanguageJSON);
 					}
@@ -67,7 +66,6 @@ var sequence = {
 		},
 		templates: function(callback)
 		{
-
 			var loader = new MultiLoader(
 				{
 					pathPrefix: __dirname + '/../public/templates',
@@ -107,48 +105,48 @@ var sequence = {
 
 
 
-_.each(
-	['fr', 'ja', 'el'],
-	function(language)
-	{
-		sequence['lang_'+language] = function(callback)
-		{
-			translateJSON(
-				{
-					json: primaryLanguageJSON,
-					source: primaryLanguage,
-					target: language
-				},
-				{
-					success: function(json)
-					{
-						fs.writeFile(
-							rootPath + "/public/translations/lang_" + language + ".json",
-							JSON.stringify(json),
-							function(err)
-							{
-								if(err)
-								{
-									callback(new Error());
-								}
-								else
-								{
-									console.log("Language translated: " + language);
-									callback(null, json);
-								}
-							}
-						);
-					},
-					error: function()
-					{
-						//TODO Put message in here
-						callback(new Error());
-					}
-				}
-			);
-		};
-	}
-);
+// _.each(
+// 	['fr', 'ja', 'el'],
+// 	function(language)
+// 	{
+// 		sequence['lang_'+language] = function(callback)
+// 		{
+// 			translateJSON(
+// 				{
+// 					json: primaryLanguageJSON,
+// 					source: primaryLanguage,
+// 					target: language
+// 				},
+// 				{
+// 					success: function(json)
+// 					{
+// 						fs.writeFile(
+// 							rootPath + "/public/translations/lang_" + language + ".json",
+// 							JSON.stringify(json),
+// 							function(err)
+// 							{
+// 								if(err)
+// 								{
+// 									callback(new Error());
+// 								}
+// 								else
+// 								{
+// 									console.log("Language translated: " + language);
+// 									callback(null, json);
+// 								}
+// 							}
+// 						);
+// 					},
+// 					error: function()
+// 					{
+// 						//TODO Put message in here
+// 						callback(new Error());
+// 					}
+// 				}
+// 			);
+// 		};
+// 	}
+// );
 
 /////////////////////////////////////////////////////////////////
 // CONFIG

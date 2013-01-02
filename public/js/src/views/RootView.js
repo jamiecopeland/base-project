@@ -1,13 +1,13 @@
 define(
 	[
 		'underscore',
-		'lang',
+		'config/Lang',
 		'views/BaseView'
 	],
 
 	function(
 		_,
-		lang,
+		Lang,
 		BaseView
 	)
 	{
@@ -28,12 +28,12 @@ define(
 
 			render: function()
 			{
-				console.log('RootView lang', lang);
+				console.log('RootView Lang', Lang);
 
 				var output = this.templater.compile(
 					'root',
 					{
-						lang: lang
+						lang: Lang
 					}
 				);
 

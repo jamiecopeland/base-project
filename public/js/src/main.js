@@ -1,6 +1,5 @@
 define(
 	[
-		'lang',
 		'jquery',
 		'underscore',
 		'backbone',
@@ -10,10 +9,10 @@ define(
 		'utils/EventBus',
 		'config/Router',
 		'config/Config',
+		'config/Lang',
 		'views/RootView'
 	],
 	function(
-		lang,
 		$,
 		_,
 		Backbone,
@@ -23,6 +22,7 @@ define(
 		EventBus,
 		Router,
 		Config,
+		Lang,
 		RootView
 	)
 	{
@@ -43,7 +43,7 @@ define(
 						dataType: 'json',
 						success: function(data)
 						{
-							_.extend(lang, data);
+							_.extend(Lang, data);
 						}
 					}
 				);
