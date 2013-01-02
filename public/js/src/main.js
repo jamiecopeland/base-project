@@ -60,10 +60,8 @@ define(
 			// 	{
 			// 		success: function(data)
 			// 		{
-						
-			// 			lang = data;
-
 			// 			_.extend(lang, data);
+			// 			loadTemplates();
 			// 		},
 			// 		error: function(error)
 			// 		{
