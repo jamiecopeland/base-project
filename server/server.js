@@ -10,6 +10,7 @@ var fs = require('fs');
 var translate = require('node-google-translate');
 var Handlebars = require('handlebars');
 var _ = require('underscore');
+var async = require('async');
 
 // Project imports
 var Templater = require(rootPath + '/public/js/libs/templater.js');
@@ -19,6 +20,98 @@ var MultiLoader = require(rootPath + '/public/js/libs/multiLoader.js');
 /////////////////////////////////////////////////////////////////
 // SYSTEM SETTINGS
 
+var primaryLanguage = 'en';
+var primaryLanguageJSON;
+
+
+
+var sequence = {
+		serverConfig: function(callback)
+		{
+			fs.readFile(
+				rootPath + '/server/user-config.json',
+				'utf8',
+				function(err, data)
+				{
+					if(err)
+					{
+						//TODO Put message in here
+						callback(new Error());
+					}
+					else
+					{
+						_.extend(config, JSON.parse(data));
+						callback(null, config);
+					}
+				}
+			);
+		},
+		primaryLanguage: function(callback)
+		{
+			fs.readFile(
+				rootPath + '/public/translations/lang_'+primaryLanguage+'.json',
+				'utf8',
+				function(err, data)
+				{
+					if(err)
+					{
+						callback(new Error());
+					}
+					else
+					{
+						primaryLanguageJSON = data;
+						callback(null, primaryLanguageJSON);
+					}
+				}
+			);
+		}
+};
+
+
+_.each(
+	['fr', 'ja', 'el'],
+	function(language)
+	{
+		sequence['lang_'+language] = function(callback)
+		{
+			translateJSON(
+				{
+					json: lang,
+					source: primaryLanguage,
+					target: language
+				},
+				{
+					success: function(json)
+					{
+						fs.writeFile(
+							rootPath + "/public/translations/lang_" + language + ".json",
+							JSON.stringify(json),
+							function(err)
+							{
+								if(err)
+								{
+									console.log('happning here????');
+									callback(new Error());
+								}
+								else
+								{
+									console.log("Language translated: " + language);
+									callback(null, json);
+								}
+							}
+						);
+					},
+					error: function()
+					{
+						//TODO Put message in here
+						callback(new Error());
+					}
+				}
+			);
+		};
+	}
+);
+
 /////////////////////////////////////////////////////////////////
 // CONFIG
 
@@ -27,25 +120,6 @@ var config = {
 	googleTranslateKey: "YOUR_API_KEY_HERE"
 };
 
-function loadUserConfig(completeHandler)
-{
-	fs.readFile(
-		rootPath + '/server/user-config.json',
-		'utf8',
-		function(err, data)
-		{
-			if(err)
-			{
-				completeHandler(false);
-			}
-			else
-			{
-				_.extend(config, JSON.parse(data));
-				completeHandler(true);
-			}
-		}
-	);
-}
 
 /////////////////////////////////////////////////////////////////
 // TEMPLATER SETUP
@@ -120,7 +194,6 @@ var allowCrossDomain = function(req, res, next) {
 };
 app.use(allowCrossDomain);
 
-
 /////////////////////////////////////////////////////////////////
 // LANG
 
@@ -143,38 +216,34 @@ function translateJSON(options, resultHandler)
 {
 	JSONTranslator.translateJSON(
 		options.json,
-		// doGoogleTranslate,
-		// doTestTranslate,
-
-		function(object, property, resultHandler)
-		{
-			object[property] = '**' + object[property] + '**';
-			resultHandler.success();
-		},
 
 		// function(object, property, resultHandler)
 		// {
-		// 	var value = object[property];
-		// 	translate(
-		// 		{
-		// 			q: value,
-		// 			source: options.source,
-		// 			target: options.target,
-		// 			key: config.googleTranslateKey
-		// 		},
-		// 		function(result)
-		// 		{
-		// 			object[property] = result[value];
-		// 			resultHandler.success();
-		// 		}
-		// 	);
+		// 	object[property] = '**' + object[property] + '**';
+		// 	resultHandler.success();
 		// },
+
+		function(object, property, resultHandler)
+		{
+			var value = object[property];
+			translate(
+				{
+					q: value,
+					source: options.source,
+					target: options.target,
+					key: config.googleTranslateKey
+				},
+				function(result)
+				{
+					object[property] = result[value];
+					resultHandler.success();
+				}
+			);
+		},
 
 		{
 			success: function(json)
 			{
-				// console.log(json);
-				lang = json;
 				resultHandler.success(json);
 			},
 			error: function(error)
@@ -185,6 +254,49 @@ function translateJSON(options, resultHandler)
 		}
 	);
 }
+
+// function exportLanguages()
+// {
+// 	_.each(
+// 		['fr', 'ja', 'el'],
+// 		function(language)
+// 		{
+// 			translateJSON(
+// 				{
+// 					json: lang,
+// 					source: 'en',
+// 					target: language
+// 				},
+// 				{
+// 					success: function(json)
+// 					{
+						
+
+// 						fs.writeFile(
+// 							rootPath + "/public/translations/lang_" + language + ".json",
+// 							JSON.stringify(json),
+// 							function(err)
+// 							{
+// 								if(err)
+// 								{
+// 									console.log(err);
+// 								}
+// 								else
+// 								{
+// 									console.log("Language translated: " + language);
+// 								}
+// 							}
+// 						);
+// 					},
+// 					error: function()
+// 					{
+						
+// 					}
+// 				}
+// 			);
+// 		}
+// 	);
+// }
 
 /////////////////////////////////////////////////////////////////
 // ROUTES
@@ -264,48 +376,19 @@ app.get(
 /////////////////////////////////////////////////////////////////
 // STARTUP
 
-function onUserConfigLoadComplete()
-{
-	// onSetupComplete();
-	translateJSON(
-		{
-			json: lang,
-			source: 'en',
-			target: 'fr'
-		},
-		{
-			success: function()
-			{
-				onTranslateComplete();
-			},
-			error: function()
-			{
-				
-			}
-		}
-	);
-}
 
-function onTranslateComplete()
-{
-	onSetupComplete();
-}
-
-function onSetupComplete()
-{
-	app.listen(config.port);
-
-	console.log('----------------------------------------------------');
-	console.log(' SERVER STARTED ON PORT ' + config.port);
-	console.log('----------------------------------------------------');
-}
 
 function boot()
 {
-	loadUserConfig(
-		function()
+	async.series(
+		sequence,
+		function(err, results)
 		{
-			onUserConfigLoadComplete();
+			app.listen(config.port);
+
+			console.log('----------------------------------------------------');
+			console.log(' SERVER STARTED ON PORT ' + config.port);
+			console.log('----------------------------------------------------');
 		}
 	);
 }

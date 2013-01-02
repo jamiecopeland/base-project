@@ -9,7 +9,8 @@
 		"grunt-contrib-less": "0.3.2",
 		"handlebars": "1.0.7",
 		"node-google-translate": "0.1.0",
-		"underscore": "1.4.3"
+		"underscore": "1.4.3",
+		"async": "0.1.22"
 	},
 	"main": "./server/server.js"
 }

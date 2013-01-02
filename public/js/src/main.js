@@ -9,6 +9,7 @@ define(
 		'templater',
 		'utils/EventBus',
 		'config/Router',
+		'config/Config',
 		'views/RootView'
 	],
 	function(
@@ -21,98 +22,85 @@ define(
 		Templater,
 		EventBus,
 		Router,
+		Config,
 		RootView
 	)
 	{
 		return function()
 		{
-			
-			
 			// App start point
+			var templater;
+			var language = 'ja';
 
-			function doNodeTranslation(json, resultHandler)
+			////////////////////////////////////////////////////////////
+
+			function loadLang(resultHandler)
 			{
-				$.ajax(
+				return $.ajax(
 					{
-						url: '/translate',
-						type: 'POST',
+						url: '/translations/lang_'+language+'.json',
+						type: 'GET',
 						dataType: 'json',
-						data:
-						{
-							json: json,
-							source: 'en',
-							target: 'ja'
-						},
 						success: function(data)
 						{
-							resultHandler.success(data);
-						},
-						error: function(error)
-						{
-							resultHandler.error(error);
+							_.extend(lang, data);
 						}
 					}
 				);
 			}
 
-			// doNodeTranslation(
-			// 	lang,
-			// 	{
-			// 		success: function(data)
-			// 		{
-			// 			_.extend(lang, data);
-			// 			loadTemplates();
-			// 		},
-			// 		error: function(error)
-			// 		{
-			// 			console.log('doNodeTranslation error');
-			// 		}
-			// 	}
-			// );
-
-			loadTemplates();
-
 			////////////////////////////////////////////////////////////
-
-			var templater;
-			var loader;
 
 			function loadTemplates()
 			{
-				loader = new MultiLoader(
-				{
-					// pathPrefix: '../templates',
-					// pathSuffix: '.hbs',
-					// unloadedTemplates: ['index', 'mainMenu']
+				var deferred = $.Deferred();
 
-					unloadedTemplates: [
-						{
-							id: 'root',
-							path: '../templates/root.hbs'
-						},
-						{
-							id: 'mainMenu',
-							path: '../templates/mainMenu.hbs'
-						}
-					]
-				},
-				{
-					success: function()
+				var multiLoader = new MultiLoader(
 					{
-						templater = new Templater({rawTemplates: loader.rawTemplates});
-						startup();
+						// pathPrefix: '../templates',
+						// pathSuffix: '.hbs',
+						// unloadedTemplates: ['index', 'mainMenu']
+
+						unloadedTemplates: [
+							{
+								id: 'root',
+								path: '../templates/root.hbs'
+							},
+							{
+								id: 'mainMenu',
+								path: '../templates/mainMenu.hbs'
+							}
+						]
 					},
-					error: function()
 					{
-						console.log('MultiLoader error');
+						success: function()
+						{
+							templater = new Templater({rawTemplates: multiLoader.rawTemplates});
+							deferred.resolve();
+						},
+						error: function()
+						{
+							console.log('MultiLoader error');
+						}
 					}
-				}
-			);
+				);
+
+				return deferred;
 			}
 
 			////////////////////////////////////////////////////////////
 
-			function startup()
+			$.when(
+				loadLang(),
+				loadTemplates()
+			).done(
+				function()
+				{
+					onInitialLoadComplete();
+				}
+			);
+
+			function onInitialLoadComplete()
 			{
 				this.rootView = new RootView(
 					{
