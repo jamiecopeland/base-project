@@ -4,13 +4,13 @@
 	"version": "0.0.1",
 	"private": true,
 	"dependencies": {
+		"async": "0.1.22",
 		"express": "3.x",
 		"fs": "0.0.0",
 		"grunt-contrib-less": "0.3.2",
 		"handlebars": "1.0.7",
 		"node-google-translate": "0.1.0",
-		"underscore": "1.4.3",
-		"async": "0.1.22"
+		"underscore": "1.4.3"
 	},
 	"main": "./server/server.js"
 }
