@@ -105,48 +105,48 @@ var sequence = {
 
 
 
-// _.each(
-// 	['fr', 'ja', 'el'],
-// 	function(language)
-// 	{
-// 		sequence['lang_'+language] = function(callback)
-// 		{
-// 			translateJSON(
-// 				{
-// 					json: primaryLanguageJSON,
-// 					source: primaryLanguage,
-// 					target: language
-// 				},
-// 				{
-// 					success: function(json)
-// 					{
-// 						fs.writeFile(
-// 							rootPath + "/public/translations/lang_" + language + ".json",
-// 							JSON.stringify(json),
-// 							function(err)
-// 							{
-// 								if(err)
-// 								{
-// 									callback(new Error());
-// 								}
-// 								else
-// 								{
-// 									console.log("Language translated: " + language);
-// 									callback(null, json);
-// 								}
-// 							}
-// 						);
-// 					},
-// 					error: function()
-// 					{
-// 						//TODO Put message in here
-// 						callback(new Error());
-// 					}
-// 				}
-// 			);
-// 		};
-// 	}
-// );
+_.each(
+	['fr', 'ja', 'el'],
+	function(language)
+	{
+		sequence['lang_'+language] = function(callback)
+		{
+			translateJSON(
+				{
+					json: primaryLanguageJSON,
+					source: primaryLanguage,
+					target: language
+				},
+				{
+					success: function(json)
+					{
+						fs.writeFile(
+							rootPath + "/public/translations/lang_" + language + ".json",
+							JSON.stringify(json),
+							function(err)
+							{
+								if(err)
+								{
+									callback(new Error());
+								}
+								else
+								{
+									console.log("Language translated: " + language);
+									callback(null, json);
+								}
+							}
+						);
+					},
+					error: function()
+					{
+						//TODO Put message in here
+						callback(new Error());
+					}
+				}
+			);
+		};
+	}
+);
 
 /////////////////////////////////////////////////////////////////
 // CONFIG
@@ -266,50 +266,50 @@ app.get('/single-page', function(request, response)
 	response.send(output);
 });
 
-app.post('/translate', function(request, response)
-{
-	translateJSON(
-		{
-			json: request.body.json,
-			source: request.body.source ? request.body.source : 'en',
-			target: request.body.target
-		},
-		{
-			success: function(data)
-			{
-				response.send(data);
-			},
-			error: function()
-			{
-				next(new Error('The translator went wrong'));
-			}
-		}
-	);
-});
+// app.post('/translate', function(request, response)
+// {
+// 	translateJSON(
+// 		{
+// 			json: request.body.json,
+// 			source: request.body.source ? request.body.source : 'en',
+// 			target: request.body.target
+// 		},
+// 		{
+// 			success: function(data)
+// 			{
+// 				response.send(data);
+// 			},
+// 			error: function()
+// 			{
+// 				next(new Error('The translator went wrong'));
+// 			}
+// 		}
+// 	);
+// });
 
-app.get(
-	'/copy.js',
-	function(request, response)
-	{
-		// Very simple first pass implementation - obviously using caching here in future
-		fs.readFile(
-			rootPath + '/public/translations/lang_en-gb.js',
-			'utf8',
-			function(err, data)
-			{
-				if(err)
-				{
-					// Do something if we can't load the data
-				}
-				else
-				{
-					response.set('Content-Type', 'application/javascript');
-					response.send(data);
-				}
-			}
-		);
-	}
-);
+// app.get(
+// 	'/copy.js',
+// 	function(request, response)
+// 	{
+// 		// Very simple first pass implementation - obviously using caching here in future
+// 		fs.readFile(
+// 			rootPath + '/public/translations/lang_en-gb.js',
+// 			'utf8',
+// 			function(err, data)
+// 			{
+// 				if(err)
+// 				{
+// 					// Do something if we can't load the data
+// 				}
+// 				else
+// 				{
+// 					response.set('Content-Type', 'application/javascript');
+// 					response.send(data);
+// 				}
+// 			}
+// 		);
+// 	}
+// );
 
 /////////////////////////////////////////////////////////////////
 // STARTUP
@@ -327,6 +327,44 @@ function boot()
 			console.log('----------------------------------------------------');
 		}
 	);
+
+
+	//////////////////////////////////////////////
+	// REDIS
+	// var redis = require("redis");
+	// var client = redis.createClient();
+	 
+	// client.on(
+	// 	"error", function (err)
+	// 	{
+	// 		console.log("Error " + err);
+	// 	}
+	// );
+
+	// client.on("connect", runSample);
+
+	// function runSample()
+	// {
+	// 	// Set a value
+	// 	client.set(
+	// 		"string key", "Hello World",
+	// 		function (err, reply)
+	// 		{
+	// 			console.log(reply.toString());
+	// 		}
+	// 	);
+		
+	// 	// Get a value
+	// 	client.get(
+	// 		"string key",
+	// 		function (err, reply)
+	// 		{
+	// 			console.log(reply.toString());
+	// 		}
+	// 	);
+	// }
+
+
 }
 
 boot();
